@@ -12,7 +12,7 @@ Whether you're building a large-scale Bazel application or want to try Vector to
 
 # Usage
 
-Use a [http_archive rule](https://bazel.build/rules/lib/repo/http#http_archive) in your project's WORKSPACE file to let bazel fetch the rules and toolchains.
+Use a [http_archive rule](https://bazel.build/rules/lib/repo/http#http_archive) in your project's WORKSPACE or MODULES.bazel file to let bazel fetch the rules and toolchains.
 
 
 # Bazel module
