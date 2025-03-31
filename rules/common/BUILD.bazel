@@ -1,0 +1,20 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+
+exports_files(
+    glob(
+        ["*"],
+    ),
+)
+
+bzl_library(
+    name = "create_davinci_tool_workspace",
+    srcs = ["create_davinci_tool_workspace.bzl"],
+    visibility = ["//visibility:public"],
+    deps = [":copy_file"],
+)
+
+bzl_library(
+    name = "copy_file",
+    srcs = ["copy_file.bzl"],
+    visibility = ["//visibility:public"],
+)
