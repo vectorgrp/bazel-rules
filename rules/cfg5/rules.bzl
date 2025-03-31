@@ -51,8 +51,6 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, dpa_file, inputs, template, is_wor
         generate_tools.append(info.cfg5cli_path)
 
     if ctx.attr.private_is_windows:
-        # For Windows we have to hack the path to the dvcfg5_report_file, because we switch the working directory to the dpa_folder when executing DVCfg5.
-        # This leads to the problem that the tool saves the report on the wrong place because the output path is relative.
         upward_path = "../" * len(dpa_file.dirname.split("/"))
         report_file_path = "../" + dvcfg5_report_file.basename if is_workspace else upward_path + dvcfg5_report_file.path
         command = template.format(
@@ -124,7 +122,6 @@ cfg5_generate_workspace_attrs = {
     "genArgs": attr.string_list(doc = "The DaVinciCfgCmd argument options."),
     "sip": attr.label(doc = "sip location to mark it as a dependency, as it the sip is needed for cfg5 execution"),
     "private_is_windows": attr.bool(mandatory = True, doc = "Is set automatically to the correct OS value"),
-    # "A List of the folders where the config files reside, this cannot be detected automatically, as only the current package can be resolved elegantly"
     "config_folders": attr.string_list(doc = "(Optional) List of config folders that the path will be checked for in each file to create a nested Config folder structure, default is [\"Config\"]", default = ["Config"]),
 }
 
@@ -289,7 +286,7 @@ def cfg5_generate_rt(name, **kwargs):
         **kwargs
     )
 
-#This template creates a powershell script file that runs the CFG5 from the git repository and not the Bazle workspace repository.
+#This template creates a powershell script file that runs the CFG5 from the git repository and not the Bazel workspace repository.
 _CFG5_START_POWERSHELL_TEMPLATE = """
 $ErrorActionPreference = "Stop"
 $script_full_path = $PSCommandPath
