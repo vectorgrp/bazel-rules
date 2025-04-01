@@ -1,0 +1,5 @@
+This repository contains files licensed under different licenses.
+
+- The file "copy_file.bzl" is licensed under the Apache License, Version 2.0. 
+  See the full license at http://www.apache.org/licenses/LICENSE-2.0.
+- All other files in this repository are licensed under the MIT License.

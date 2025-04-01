@@ -1,6 +1,16 @@
-MIT License
+This repository contains code licensed under two different open-source licenses:
 
-Copyright (c) 2025 Vector Group
+1. **Apache License 2.0**
+   - The file "copy_file.bzl" is licensed under the Apache License, Version 2.0.
+   - See the full license in `LICENSE-APACHE`.
+
+
+2. **MIT License**
+   - The rest of the repository is licensed under the MIT License.
+   - See the full license in `LICENSE-MIT`.
+
+By contributing to this repository, you agree that your contributions will be 
+licensed under the respective licenses of the files being modified.
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
