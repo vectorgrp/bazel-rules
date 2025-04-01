@@ -21,7 +21,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 """Rule to start Config 5 from Bazel"""
 
 load("//rules/common:create_davinci_tool_workspace.bzl", "create_davinci_tool_workspace")
