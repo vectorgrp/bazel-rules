@@ -21,7 +21,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 """Function for creating tool workspaces, circumventing the usual way that these tools are being executed"""
 
 load("//rules/common:copy_file.bzl", "copy_file")
