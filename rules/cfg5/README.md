@@ -57,7 +57,7 @@ cfg5_generate_rt(<a href="#cfg5_generate_rt-name">name</a>, <a href="#cfg5_gener
 Wraps the cfg5_generate_rt with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -84,7 +84,7 @@ cfg5_generate_rt_workspace(<a href="#cfg5_generate_rt_workspace-name">name</a>, 
 Wraps the cfg5_generate_rt_workspace with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -111,7 +111,7 @@ cfg5_generate_vtt(<a href="#cfg5_generate_vtt-name">name</a>, <a href="#cfg5_gen
 Wraps the cfg5_generate_vtt with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -138,7 +138,7 @@ cfg5_generate_vtt_workspace(<a href="#cfg5_generate_vtt_workspace-name">name</a>
 Wraps the cfg5_generate_vtt_workspace with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -157,7 +157,7 @@ The following showcases an example on how to use a rule and toolchain in your Ba
 
 ## Fetching the rule
 
-In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the rule and toolchain:
+In a `WORKSPACE` or `MODULE.bazel` file add a `http_archive` rule to fetch the rule and toolchain:
 
 ```python
 http_archive(
