@@ -26,10 +26,7 @@
 load("//rules/cfg5:rules.bzl", _cfg5_generate_rt = "cfg5_generate_rt", _cfg5_generate_rt_workspace = "cfg5_generate_rt_workspace", _cfg5_generate_vtt = "cfg5_generate_vtt", _cfg5_generate_vtt_workspace = "cfg5_generate_vtt_workspace", _start_cfg5_windows = "start_cfg5_windows")
 load("//rules/cfg5:toolchains.bzl", _cfg5_toolchain = "cfg5_toolchain")
 load("//rules/dvteam:rules.bzl", _dvteam = "dvteam")
-load("//rules/ocs:app_building.bzl", _create_ocs_app_deploy_rule = "create_ocs_app_deploy_rule", _create_ocs_app_deploy_rule_internal = "create_ocs_app_deploy_rule_internal")
 load("//rules/ocs:rules.bzl", _cfg5_execute_script_task = "cfg5_execute_script_task", _ocs = "ocs")
-load("//rules/ocs:toolchains.bzl", _seven_zip_toolchain = "seven_zip_toolchain")
-
 
 # DaVinci Configurator 5 rules
 start_cfg5_windows = _start_cfg5_windows
@@ -44,10 +41,6 @@ dvteam = _dvteam
 # OCS rules
 ocs = _ocs
 cfg5_execute_script_task = _cfg5_execute_script_task
-create_ocs_app_deploy_rule = _create_ocs_app_deploy_rule
-
 
 # Toolchain rules
 cfg5_toolchain = _cfg5_toolchain
-seven_zip_toolchain = _seven_zip_toolchain
-
