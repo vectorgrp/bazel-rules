@@ -184,7 +184,7 @@ dvteam_attrs = {
     # "A List of the folders where the config files reside, this cannot be detected automatically, as only the current package can be resolved elegantly"
     "config_folders": attr.string_list(doc = "(Optional) List of config folders that the path will be checked for in each file to create a nested Config folder structure, default is [\"Config\"]", default = ["Config"]),
     # Attributes to add a java keystore to the used jdk toolchain
-    "java_keystore_file": attr.label(mandatory = False, allow_single_file = True, doc = "Java KeyStore file with vector certificates."),
+    "java_keystore_file": attr.label(mandatory = False, allow_single_file = True, doc = "Java KeyStore file with root certificates."),
     "java_keystore_password": attr.string(mandatory = False, default = "changeit", doc = "Java KeyStore password. Default value is changeit"),
 }
 

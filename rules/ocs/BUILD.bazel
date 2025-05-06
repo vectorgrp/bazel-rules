@@ -6,19 +6,8 @@ exports_files(
     ),
 )
 
-toolchain_type(
-    name = "toolchain_type",
-    visibility = ["//visibility:public"],
-)
-
 bzl_library(
     name = "rules",
     srcs = ["rules.bzl"],
-    visibility = ["//visibility:public"],
-)
-
-bzl_library(
-    name = "app_building",
-    srcs = ["app_building.bzl"],
     visibility = ["//visibility:public"],
 )

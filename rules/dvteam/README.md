@@ -1,5 +1,5 @@
 # DaVinci Team
-This chapter contains DaVinci Team related rules and toolchains documentation. 
+This chapter contains DaVinci Team related rules documentation. 
 
 <a id="dvteam"></a>
 
@@ -28,11 +28,11 @@ Wraps the dvteam with the private_is_windows select statement in place
 A dvteam_def rule that contains the actual implementation
 
 # Example usage
-The following showcases an example on how to use a rule and toolchain in your Bazel project environment.
+The following showcases an example on how to use a rule in your Bazel project environment.
 
 ## Fetching the rule
 
-In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the rule and toolchain:
+In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the rule:
 
 ```python
 http_archive(
@@ -48,51 +48,31 @@ Adapt `<tag_version>` to fetch a distinct release.
 In a `BUILD.bazel` file refer to the rule as follows:
 
 ```python
-cfg5_generate_rt_workspace(
-    name = "rt_generate", # Name of the Bazel target
-    config_files = [ # Additional configuration files to start the cfg5 with
-        "Config/AUTOSAR/PlatformTypes_AR4.arxml",
-        "Config/VTT/Demo.vttmake",
-        "Config/VTT/Demo.vttproj",
-        "AnotherConfig/Config.arxml",
+dvteam(
+    name = "myintegrate-start-application", # Name of the Bazel target
+    app_package_sources = [ # The additional app package sources that should be integrated
+        "@myapplication//:package", 
     ],
-    config_folders = [ # List of config folders that the path will be checked for in each file to create a nested Config folder structure
-        "Config",
-        "AnotherConfig",
-    ]
-    dpa_file = ":FolderPath/ToDpaProject", # The folder path to your DPA project file (.dpa)
-    genArgs = [ # List of command line argument the DaVinci Configurator 5 CLI supports
-        "--help"
+    config_files = ["/path/to/myEcuC_BSW-x.armxl", # The expected output files of DaVinci Team
+                    "/path/to/myEcuC_BSW-y.armxl",
+                    "/path/to/myEcuC_BSW-z.armxl",
     ],
-    generated_files = "FolderPath/ToGeneratedFiles/", # List of files which are output of this rule
-    ,
-    sip = "@external_repo//:package", # Path to the Microsar Classic product package
-    target_compatible_with = [ # Platform definition for this target
-        "//platforms:your_platform_definition",
+    dpa_file = "path/to/myproject.dpa", # The dpa file to use for the DvTeam run
+    dvteam_args = [ # The arguments for the actual DvTeam CLI for the run
+        "--debug",
+        "--info",
     ],
-)
-```
-
-## Configure the toolchain
-
-In a `BUILD.bazel` file refer to the toolchain & platform configuration as follows:
-
-```python
-cfg5_toolchain(
-    name = "cfg5_linux_impl",
-    cfg5_files = "@ecu1sip//:DaVinci_Configurator_5",
-    cfg5cli_path = "@ecu1sip//:DaVinciConfigurator/Core/DVCfgCmd",
+    global_instruction_files = ["//path/to/xyz.mapping.json", # List of global instruction files. Depending on the instruction type, global instructions may be an addition to or have precedence over App Package specific instructions
+    ], 
+    gradle_file = "//path/to/build.gradle", # The build.gradle file to run DvTeam with
+    java_keystore_file = "//path/to/java_keystore/file", # Java KeyStore file with root certificates
+    results = ["/path/to/myproject_dvteam_task_name-x.zip", # The DvTeam run output files
+               "/path/to/myproject_dvteam_task_name-y.zip",
+               "/path/to/myproject_dvteam_task_name-z.zip",
+    ],
+    sip = "@mysip//path/to/bsw_modules", # Microsar Classic location to mark it as a dependency
+    task = "myDvTeamTask", # The DvTeam task that will be run
+    wfconfig = "//path/to/wfconfig.json", # The wfconfig file
 )
 
-toolchain(
-    name = "cfg5_linux",
-    exec_compatible_with = [
-        "@platforms//os:linux",
-    ],
-    target_compatible_with = [
-        "@platforms//os:linux",
-    ],
-    toolchain = ":cfg5_linux_impl",
-    toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
-)
 ```

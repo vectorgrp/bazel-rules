@@ -14,6 +14,9 @@ Whether you're building a large-scale Bazel application or want to try Vector to
 
 Please refer to the appropriate rules folder for a detailed description in a README.md file.
 
+# Note
+Please note that all available rules are released in one package.
+
 
 # Bazel module
 

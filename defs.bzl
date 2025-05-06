@@ -45,7 +45,6 @@ dvteam = _dvteam
 ocs = _ocs
 cfg5_execute_script_task = _cfg5_execute_script_task
 create_ocs_app_deploy_rule = _create_ocs_app_deploy_rule
-create_ocs_app_deploy_rule_internal = _create_ocs_app_deploy_rule_internal
 
 
 # Toolchain rules
