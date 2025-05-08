@@ -12,7 +12,7 @@ Whether you are creating a large Bazel application or trying out Vector tools in
 
 ## Getting Started
 
-In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the rule:
+In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the ruleset:
 
 ```python
 http_archive(
