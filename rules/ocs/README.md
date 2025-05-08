@@ -46,22 +46,10 @@ cfg5_execute_script_task(<a href="#cfg5_execute_script_task-name">name</a>, <a h
 
 
 # Example usage
+
 The following showcases an example on how to use a rule in your Bazel project environment.
 
-## Fetching the rule
-
-In a `WORKSPACE` or `MODULE.bazel` file add a `http_archive` rule to fetch the rule:
-
-```python
-http_archive(
-    name = "vector_bazel_rules",
-    sha256 = "1234567891234567891234567891234567891234567891234567891234567891",
-    url = "https://github.com/vectorgrp/bazel-rules/archive/refs/tags/<tag_version>",
-)
-```
-Adapt `<tag_version>` to fetch a distinct release.
-
-## Instantiate the rule
+## Instantiate a rule
 
 In a `BUILD.bazel` file refer to the rules as follows:
 
@@ -90,5 +78,103 @@ In a `BUILD.bazel` file refer to the rules as follows:
         script = "//path/to/my-script.jar", # The .jar or .dvgroovy file
         result = ["/path/to/output", # The run output files
         ],
+    )
+```
+
+## Dependencies
+
+The ```ocs``` rule depends on a couple of other rules and toolchains. 
+
+The dotnet [Bazel rules for .NET](https://github.com/bazel-contrib/rules_dotnet/tree/master) is used for the execution of the rule under Linux.
+
+In a ```MODULE.bazel``` file add this dependency as follows:
+
+```python
+      bazel_dep(name = "rules_dotnet", version = "0.17.5") # Tested with that version
+      dotnet = use_extension("@rules_dotnet//dotnet:extensions.bzl", "dotnet")
+      dotnet.toolchain(dotnet_version = "8.0.103") # Tested with that version
+      use_repo(dotnet, "dotnet_toolchains")
+```
+
+The DaVinci Developer and DaVinci Configurator 5 toolchains are used for the execution of the ```ocs``` and ```cfg5_execute_script_task``` rules regardless of the OS.
+
+In a `BUILD.bazel` file refer to the toolchain & platform configuration as follows:
+
+### Execution under Linux
+
+```python
+    davinci_developer_toolchain(
+        name = "davinci_developer_linux_impl",
+        davinci_developer_label = "@davinci_developer_linux//:DEVImEx/bin/DVImEx", # External dependency to the DaVinci Developer CLI tool
+    )
+
+    toolchain(
+        name = "davinci_developer_linux",
+        exec_compatible_with = [
+            "@platforms//os:linux",
+        ],
+        target_compatible_with = [
+            "@platforms//os:linux",
+        ],
+        toolchain = ":davinci_developer_linux_impl",
+        toolchain_type = "@vector_bazel_rules//rules/davinci_developer:toolchain_type",
+    )
+
+     cfg5_toolchain(
+        name = "cfg5_linux_impl",
+        cfg5_files = "@sip//:DaVinci_Configurator_5", # External dependency to the Microsar Classic product
+        cfg5cli_path = "@sip//:DaVinciConfigurator/Core/DVCfgCmd", # External dependency to the DaVinci Configurator 5 CLI tool
+     )
+
+    toolchain(
+        name = "cfg5_linux",
+        exec_compatible_with = [
+            "@platforms//os:linux",
+        ],
+        target_compatible_with = [
+            "@platforms//os:linux",
+        ],
+        toolchain = ":cfg5_linux_impl",
+        toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
+    )
+```
+
+### Execution under Windows
+
+```python
+    davinci_developer_toolchain(
+      name = "davinci_developer_windows_impl",
+      davinci_developer_path = "X:/Path/To/DaVinci_Developer_Classic/Vx_yz",
+    )
+
+    toolchain(
+      name = "davinci_developer_windows",
+      exec_compatible_with = [
+          "@platforms//os:windows",
+      ],
+      target_compatible_with = [
+          "@platforms//os:windows",
+      ],
+      toolchain = ":davinci_developer_windows_impl",
+      toolchain_type = "@vector_bazel_rules//rules/davinci_developer:toolchain_type",
+    )
+
+    cfg5_toolchain(
+        name = "cfg5_windows_impl",
+        cfg5_files = "@sip//:DaVinci_Configurator_5", # External dependency to the Microsar Classic product
+        cfg5_path = "@sip//:DaVinciConfigurator/Core/DaVinciCFG.exe", # External dependency to the DaVinci Configurator 5 GUI tool
+        cfg5cli_path = "@sip//:DaVinciConfigurator/Core/DVCfgCmd.exe", # External dependency to the DaVinci Configurator 5 CLI tool
+    )
+
+    toolchain(
+        name = "cfg5_windows",
+        exec_compatible_with = [
+            "@platforms//os:windows",
+        ],
+        target_compatible_with = [
+            "@platforms//os:windows",
+        ],
+        toolchain = ":cfg5_windows_impl",
+        toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
     )
 ```

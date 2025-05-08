@@ -94,7 +94,7 @@ def _resolve_cfg5cli(ctx):
 def _format_createproject(ctx, ocs_config):
     # modify the location of the created project in the json file
     create_project_file_path = "CreateProject.json"
-    project_dir = ctx.outputs.result[0].dirname.split("/" + ctx.label.name)[0] + "/" + ctx.label.name  # TODO this will fail when the output does not include the label.name
+    project_dir = ctx.outputs.result[0].dirname.split("/" + ctx.label.name)[0] + "/" + ctx.label.name
 
     developer_path = _resolve_developer(ctx)
 
