@@ -45,18 +45,20 @@ Simple gradle toolchain that is used for DaVinciTeam rules and others that rely 
 | <a id="gradle_toolchain-gradle_properties"></a>gradle_properties |  optional gradle properties to use other than the default system one   | <a href="https://bazel.build/concepts/labels">Label</a> | optional |  `None`  |
 
 
-
-
-
 # Example usage
 The following showcases an example on how to use a rule and toolchain in your Bazel project environment.
 
-## Instantiate a rule
+## Instantiate a repository rule
 
-In a `BUILD.bazel` file refer to the rule as follows:
+In a ```MODULE.bazel``` file add this dependency as follows:
 
 ```python
+    generate_gradle_properties = use_repo_rule("@vector_bazel_rules//rules:defs.bzl", "generate_gradle_properties")
 
+    generate_gradle_properties(
+        name = "gradle_properties",
+        tokens = {"<token_name>": "<url>"},
+    )
 ```
 
 ## Configure a toolchain
@@ -69,7 +71,7 @@ In a `BUILD.bazel` file refer to the toolchain & platform configuration as follo
     gradle_toolchain(
         name = "gradle_linux_impl",
         gradle_label = "@gradle//:bin/gradle",
-        gradle_properties = "@gradle_properties//:gradle.properties",
+        gradle_properties = "@gradle_properties//:gradle.properties", # Instanciated in MODULE.bazel file
     )
 
     toolchain(
@@ -91,7 +93,7 @@ In a `BUILD.bazel` file refer to the toolchain & platform configuration as follo
     gradle_toolchain(
         name = "gradle_windows_impl",
         gradle_label = "@gradle//:bin/gradle.bat",
-        gradle_properties = "@gradle_properties//:gradle.properties",
+        gradle_properties = "@gradle_properties//:gradle.properties", # Instanciated in MODULE.bazel file
     )
 
     toolchain(

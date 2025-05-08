@@ -66,9 +66,6 @@ dvteam(
 ```
 ## Dependencies
 
-- Gradle + Dotnet + DvDeveloper + DvCfg5
-
-
 The ```dvteam``` rule depends on a couple of other rules and toolchains. 
 
 The dotnet [Bazel rules for .NET](https://github.com/bazel-contrib/rules_dotnet/tree/master) is used for the execution of the rule under Linux.
@@ -81,6 +78,8 @@ In a ```MODULE.bazel``` file add this dependency as follows:
       dotnet.toolchain(dotnet_version = "8.0.103") # Tested with that version
       use_repo(dotnet, "dotnet_toolchains")
 ```
+
+## Configure a toolchain
 
 The DaVinci Developer, DaVinci Configurator 5 and gradle toolchains are used for the execution of the ```dvteam``` rule regardless of the OS.
 
