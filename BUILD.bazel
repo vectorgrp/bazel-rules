@@ -32,6 +32,10 @@ bzl_library(
     deps = [
         "//rules/cfg5:rules",
         "//rules/cfg5:toolchains",
+        "//rules/davinci_developer:toolchains",
         "//rules/dvteam:rules",
+        "//rules/gradle:rules",
+        "//rules/gradle:toolchains",
+        "//rules/ocs:rules",
     ],
 )

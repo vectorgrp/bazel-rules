@@ -25,7 +25,10 @@
 """
 load("//rules/cfg5:rules.bzl", _cfg5_generate_rt = "cfg5_generate_rt", _cfg5_generate_rt_workspace = "cfg5_generate_rt_workspace", _cfg5_generate_vtt = "cfg5_generate_vtt", _cfg5_generate_vtt_workspace = "cfg5_generate_vtt_workspace", _start_cfg5_windows = "start_cfg5_windows")
 load("//rules/cfg5:toolchains.bzl", _cfg5_toolchain = "cfg5_toolchain")
+load("//rules/davinci_developer:toolchains.bzl", _davinci_developer_toolchain = "davinci_developer_toolchain")
 load("//rules/dvteam:rules.bzl", _dvteam = "dvteam")
+load("//rules/gradle:rules.bzl", _generate_gradle_properties = "generate_gradle_properties")
+load("//rules/gradle:toolchains.bzl", _gradle_toolchain = "gradle_toolchain")
 load("//rules/ocs:rules.bzl", _cfg5_execute_script_task = "cfg5_execute_script_task", _ocs = "ocs")
 
 # DaVinci Configurator 5 rules
@@ -38,9 +41,14 @@ cfg5_generate_rt = _cfg5_generate_rt
 # DaVinci Team rules
 dvteam = _dvteam
 
+# Gradle rules
+generate_gradle_properties = _generate_gradle_properties
+
 # OCS rules
 ocs = _ocs
 cfg5_execute_script_task = _cfg5_execute_script_task
 
 # Toolchain rules
 cfg5_toolchain = _cfg5_toolchain
+davinci_developer_toolchain = _davinci_developer_toolchain
+gradle_toolchain = _gradle_toolchain
