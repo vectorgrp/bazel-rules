@@ -21,10 +21,10 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Rule to start Config 5 from Bazel"""
+"""Rules to use DaVinci Configurator 5 from Bazel"""
 
 load("//rules/common:create_davinci_tool_workspace.bzl", "create_davinci_tool_workspace")
-load("//rules/vtt:toolchains.bzl", "generate_tools_vtt")
+#load("//rules/vtt:toolchains.bzl", "generate_tools_vtt")
 
 _CFG5_GENERATE_TEMPLATE_WINDOWS = """
 start-process -WorkingDirectory  {dpa_folder} -PassThru -NoNewWindow -RedirectStandardOutput {dpa_folder}/daVinciCfg5.log -Wait {cfg5cli_path} -ArgumentList '-p {dpa_path} -g {genargs} --verbose'
@@ -134,9 +134,9 @@ def _cfg5_generate_workspace_impl(ctx, additional_genargs, tools = []):
         inputs.extend(ctx.attr.sip.files.to_list())
     return _cfg5_generate(ctx, dpa_path, dpa_folder, dpa_copy, inputs, template, True, additional_genargs, tools)
 
-def _cfg5_generate_vtt_workspace_impl(ctx):
-    tools = generate_tools_vtt(ctx)
-    return _cfg5_generate_workspace_impl(ctx, ["--genType=VTT", "--buildVTTProject"], tools)
+# def _cfg5_generate_vtt_workspace_impl(ctx):
+    # tools = generate_tools_vtt(ctx)
+    # return _cfg5_generate_workspace_impl(ctx, ["--genType=VTT", "--buildVTTProject"], tools)
 
 cfg5_generate_workspace_attrs = {
     "dpa_file": attr.label(allow_single_file = [".dpa"], doc = "Dpa project file to start the cfg5 with"),
@@ -148,35 +148,35 @@ cfg5_generate_workspace_attrs = {
     "config_folders": attr.string_list(doc = "(Optional) List of config folders that the path will be checked for in each file to create a nested Config folder structure, default is [\"Config\"]", default = ["Config"]),
 }
 
-cfg5_generate_vtt_workspace_def = rule(
-    implementation = _cfg5_generate_vtt_workspace_impl,
-    attrs = cfg5_generate_workspace_attrs,
-    doc = """
-Creates a separate cfg5 workspace containing all the given config files and run the cfg5 in this created directory inside the bazel-bin.
-This rule is wrapped with private_is_windows attribute to separate between OS differences.
-Used specifically for the vtt use case, as this adds the correct vtt flags to the Cfg5 call automatically.
-""",
-    toolchains = ["//rules/cfg5:toolchain_type", "//rules/vtt:toolchain_type"],
-)
+# cfg5_generate_vtt_workspace_def = rule(
+#     implementation = _cfg5_generate_vtt_workspace_impl,
+#     attrs = cfg5_generate_workspace_attrs,
+#     doc = """
+# Creates a separate cfg5 workspace containing all the given config files and run the cfg5 in this created directory inside the bazel-bin.
+# This rule is wrapped with private_is_windows attribute to separate between OS differences.
+# Used specifically for the vtt use case, as this adds the correct vtt flags to the Cfg5 call automatically.
+# """,
+#     toolchains = ["//rules/cfg5:toolchain_type", "//rules/vtt:toolchain_type"],
+# )
 
-def cfg5_generate_vtt_workspace(name, **kwargs):
-    """Wraps the cfg5_generate_vtt_workspace with the private_is_windows select statement in place
+# def cfg5_generate_vtt_workspace(name, **kwargs):
+#     """Wraps the cfg5_generate_vtt_workspace with the private_is_windows select statement in place
 
-    Args:
-        name: The unique name of this target
-        **kwargs: All of the attrs of the cfg5_generate_vtt_workspace rule
+#     Args:
+#         name: The unique name of this target
+#         **kwargs: All of the attrs of the cfg5_generate_vtt_workspace rule
 
-    Returns:
-        A cfg5_generate_vtt_workspace_def rule that contains the actual implementation
-    """
-    cfg5_generate_vtt_workspace_def(
-        name = name,
-        private_is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
-        **kwargs
-    )
+#     Returns:
+#         A cfg5_generate_vtt_workspace_def rule that contains the actual implementation
+#     """
+#     cfg5_generate_vtt_workspace_def(
+#         name = name,
+#         private_is_windows = select({
+#             "@bazel_tools//src/conditions:host_windows": True,
+#             "//conditions:default": False,
+#         }),
+#         **kwargs
+#     )
 
 def _cfg5_generate_rt_workspace_impl(ctx):
     return _cfg5_generate_workspace_impl(ctx, ["--genType=REAL"])
@@ -211,23 +211,23 @@ def cfg5_generate_rt_workspace(name, **kwargs):
         **kwargs
     )
 
-def _cfg5_generate_vtt_impl(ctx):
-    info_vtt = ctx.toolchains["//rules/vtt:toolchain_type"]
+# def _cfg5_generate_vtt_impl(ctx):
+#     info_vtt = ctx.toolchains["//rules/vtt:toolchain_type"]
 
-    if not ctx.attr.private_is_windows and not info_vtt.vtt_cmd_path and not info_vtt.vtt_cmd_label:
-        fail("vttcmd_path is not set in the 'vtt_toolchain', but is necessary for the generation under Linux.")
-    inputs = depset(ctx.files.input_arxmls, transitive = [ctx.attr.dpa_linux.files])
-    dpa_path = ctx.file.dpa_windows.basename
-    dpa_folder = ctx.file.dpa_windows.dirname
-    dpa_file = ctx.file.dpa_linux
-    template = _CFG5_GENERATE_TEMPLATE_LINUX
-    if ctx.attr.private_is_windows:
-        dpa_file = ctx.file.dpa_windows
-        template = _CFG5_GENERATE_TEMPLATE_WINDOWS
+#     if not ctx.attr.private_is_windows and not info_vtt.vtt_cmd_path and not info_vtt.vtt_cmd_label:
+#         fail("vttcmd_path is not set in the 'vtt_toolchain', but is necessary for the generation under Linux.")
+#     inputs = depset(ctx.files.input_arxmls, transitive = [ctx.attr.dpa_linux.files])
+#     dpa_path = ctx.file.dpa_windows.basename
+#     dpa_folder = ctx.file.dpa_windows.dirname
+#     dpa_file = ctx.file.dpa_linux
+#     template = _CFG5_GENERATE_TEMPLATE_LINUX
+#     if ctx.attr.private_is_windows:
+#         dpa_file = ctx.file.dpa_windows
+#         template = _CFG5_GENERATE_TEMPLATE_WINDOWS
 
-    tools = generate_tools_vtt(ctx)
+#     tools = generate_tools_vtt(ctx)
 
-    return _cfg5_generate(ctx, dpa_path, dpa_folder, dpa_file, inputs, template, False, ["--genType=VTT", "--buildVTTProject"], tools)
+#     return _cfg5_generate(ctx, dpa_path, dpa_folder, dpa_file, inputs, template, False, ["--genType=VTT", "--buildVTTProject"], tools)
 
 def _cfg5_generate_rt_impl(ctx):
     inputs = depset(ctx.files.input_arxmls, transitive = [ctx.attr.dpa_linux.files])
@@ -250,35 +250,35 @@ cfg5_generate_attrs = {
     "private_is_windows": attr.bool(mandatory = True, doc = "Set automatically to the correct OS value"),
 }
 
-cfg5_generate_vtt_def = rule(
-    implementation = _cfg5_generate_vtt_impl,
-    attrs = cfg5_generate_attrs,
-    doc = """
-Run the cfg5 directly in the project.
-This rule is wrapped with private_is_windows attribute to separate between OS differences.
-Used specifically for the vtt use case, as this adds the correct vtt flags to the Cfg5 call automatically.
-""",
-    toolchains = ["//rules/cfg5:toolchain_type", "//rules/vtt:toolchain_type"],
-)
+# cfg5_generate_vtt_def = rule(
+#     implementation = _cfg5_generate_vtt_impl,
+#     attrs = cfg5_generate_attrs,
+#     doc = """
+# Run the cfg5 directly in the project.
+# This rule is wrapped with private_is_windows attribute to separate between OS differences.
+# Used specifically for the vtt use case, as this adds the correct vtt flags to the Cfg5 call automatically.
+# """,
+#     toolchains = ["//rules/cfg5:toolchain_type", "//rules/vtt:toolchain_type"],
+# )
 
-def cfg5_generate_vtt(name, **kwargs):
-    """Wraps the cfg5_generate_vtt with the private_is_windows select statement in place
+# def cfg5_generate_vtt(name, **kwargs):
+#     """Wraps the cfg5_generate_vtt with the private_is_windows select statement in place
 
-    Args:
-        name: The unique name of this target
-        **kwargs: All of the attrs of the cfg5_generate_vtt rule
+#     Args:
+#         name: The unique name of this target
+#         **kwargs: All of the attrs of the cfg5_generate_vtt rule
 
-    Returns:
-        A cfg5_generate_vtt_def rule that contains the actual implementation
-    """
-    cfg5_generate_vtt_def(
-        name = name,
-        private_is_windows = select({
-            "@bazel_tools//src/conditions:host_windows": True,
-            "//conditions:default": False,
-        }),
-        **kwargs
-    )
+#     Returns:
+#         A cfg5_generate_vtt_def rule that contains the actual implementation
+#     """
+#     cfg5_generate_vtt_def(
+#         name = name,
+#         private_is_windows = select({
+#             "@bazel_tools//src/conditions:host_windows": True,
+#             "//conditions:default": False,
+#         }),
+#         **kwargs
+#     )
 
 cfg5_generate_rt_def = rule(
     implementation = _cfg5_generate_rt_impl,
