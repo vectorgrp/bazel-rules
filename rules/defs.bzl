@@ -23,7 +23,9 @@
 
 """Vector-Bazel-Rules
 """
-load("//rules/cfg5:rules.bzl", _cfg5_generate_rt = "cfg5_generate_rt", _cfg5_generate_rt_workspace = "cfg5_generate_rt_workspace", _cfg5_generate_vtt = "cfg5_generate_vtt", _cfg5_generate_vtt_workspace = "cfg5_generate_vtt_workspace", _start_cfg5_windows = "start_cfg5_windows")
+load("//rules/cfg5:rules.bzl", _cfg5_generate_rt = "cfg5_generate_rt", _cfg5_generate_rt_workspace = "cfg5_generate_rt_workspace",
+# _cfg5_generate_vtt = "cfg5_generate_vtt", _cfg5_generate_vtt_workspace = "cfg5_generate_vtt_workspace",
+ _start_cfg5_windows = "start_cfg5_windows")
 load("//rules/cfg5:toolchains.bzl", _cfg5_toolchain = "cfg5_toolchain")
 load("//rules/davinci_developer:toolchains.bzl", _davinci_developer_toolchain = "davinci_developer_toolchain")
 load("//rules/dvteam:rules.bzl", _dvteam = "dvteam")
@@ -33,9 +35,9 @@ load("//rules/ocs:rules.bzl", _cfg5_execute_script_task = "cfg5_execute_script_t
 
 # DaVinci Configurator 5 rules
 start_cfg5_windows = _start_cfg5_windows
-cfg5_generate_vtt_workspace = _cfg5_generate_vtt_workspace
+#cfg5_generate_vtt_workspace = _cfg5_generate_vtt_workspace
 cfg5_generate_rt_workspace = _cfg5_generate_rt_workspace
-cfg5_generate_vtt = _cfg5_generate_vtt
+#cfg5_generate_vtt = _cfg5_generate_vtt
 cfg5_generate_rt = _cfg5_generate_rt
 
 # DaVinci Team rules
