@@ -57,7 +57,7 @@ cfg5_generate_rt(<a href="#cfg5_generate_rt-name">name</a>, <a href="#cfg5_gener
 Wraps the cfg5_generate_rt with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -84,7 +84,7 @@ cfg5_generate_rt_workspace(<a href="#cfg5_generate_rt_workspace-name">name</a>, 
 Wraps the cfg5_generate_rt_workspace with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -111,7 +111,7 @@ cfg5_generate_vtt(<a href="#cfg5_generate_vtt-name">name</a>, <a href="#cfg5_gen
 Wraps the cfg5_generate_vtt with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -138,7 +138,7 @@ cfg5_generate_vtt_workspace(<a href="#cfg5_generate_vtt_workspace-name">name</a>
 Wraps the cfg5_generate_vtt_workspace with the private_is_windows select statement in place
 
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -155,20 +155,7 @@ A cfg5_generate_vtt_workspace_def rule that contains the actual implementation
 # Example usage
 The following showcases an example on how to use a rule and toolchain in your Bazel project environment.
 
-## Fetching the rule
-
-In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the rule and toolchain:
-
-```python
-http_archive(
-    name = "vector_bazel_rules",
-    sha256 = "1234567891234567891234567891234567891234567891234567891234567891",
-    url = "https://github.com/vectorgrp/bazel-rules/archive/refs/tags/<tag_version>",
-)
-```
-Adapt `<tag_version>` to fetch a distinct release.
-
-## Instantiate the rule
+## Instantiate a rule
 
 In a `BUILD.bazel` file refer to the rule as follows:
 
@@ -198,26 +185,52 @@ cfg5_generate_rt_workspace(
 )
 ```
 
-## Configure the toolchain
+## Configure a toolchain
 
 In a `BUILD.bazel` file refer to the toolchain & platform configuration as follows:
 
-```python
-cfg5_toolchain(
-    name = "cfg5_linux_impl",
-    cfg5_files = "@ecu1sip//:DaVinci_Configurator_5",
-    cfg5cli_path = "@ecu1sip//:DaVinciConfigurator/Core/DVCfgCmd",
-)
+### Execution under Linux
 
-toolchain(
-    name = "cfg5_linux",
-    exec_compatible_with = [
-        "@platforms//os:linux",
-    ],
-    target_compatible_with = [
-        "@platforms//os:linux",
-    ],
-    toolchain = ":cfg5_linux_impl",
-    toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
-)
+```python
+    cfg5_toolchain(
+        name = "cfg5_linux_impl",
+        cfg5_files = "@sip//:DaVinci_Configurator_5", # External dependency to the Microsar Classic product
+        cfg5cli_path = "@sip//:DaVinciConfigurator/Core/DVCfgCmd", # External dependency to the DaVinci Configurator 5 CLI tool
+    )
+
+    toolchain(
+        name = "cfg5_linux",
+        exec_compatible_with = [
+            "@platforms//os:linux",
+        ],
+        target_compatible_with = [
+            "@platforms//os:linux",
+        ],
+        toolchain = ":cfg5_linux_impl",
+        toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
+    )
 ```
+
+### Execution under Windows
+
+```python
+    cfg5_toolchain(
+        name = "cfg5_windows_impl",
+        cfg5_files = "@sip//:DaVinci_Configurator_5", # External dependency to the Microsar Classic product
+        cfg5_path = "@sip//:DaVinciConfigurator/Core/DaVinciCFG.exe", # External dependency to the DaVinci Configurator 5 GUI tool
+        cfg5cli_path = "@sip//:DaVinciConfigurator/Core/DVCfgCmd.exe", # External dependency to the DaVinci Configurator 5 CLI tool
+    )
+
+    toolchain(
+        name = "cfg5_windows",
+        exec_compatible_with = [
+            "@platforms//os:windows",
+        ],
+        target_compatible_with = [
+            "@platforms//os:windows",
+        ],
+        toolchain = ":cfg5_windows_impl",
+        toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
+    )
+```
+
