@@ -19,6 +19,7 @@ http_archive(
     name = "vector_bazel_rules",
     sha256 = "1234567891234567891234567891234567891234567891234567891234567891",
     url = "https://github.com/vectorgrp/bazel-rules/archive/refs/tags/<tag_version>",
+    strip_prefix = "bazel-rules-<tag_version>",
 )
 ```
 Adapt `<tag_version>` to fetch a distinct release.
