@@ -190,6 +190,3 @@ cfg5_generate_rt_workspace(
 All toolchain configurations are typically configured within a `BUILD.bazel` file. 
 
 Please see [DaVinci Configurator 5 toolchain definition](../toolchains.md#davinci-configurator-5-toolchains).
-
-
-
