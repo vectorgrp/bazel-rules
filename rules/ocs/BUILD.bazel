@@ -23,19 +23,14 @@
 
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
-exports_files(["defs.bzl"])
+exports_files(
+    glob(
+        ["*"],
+    ),
+)
 
 bzl_library(
-    name = "defs",
-    srcs = ["defs.bzl"],
+    name = "rules",
+    srcs = ["rules.bzl"],
     visibility = ["//visibility:public"],
-    deps = [
-        "//rules/cfg5:rules",
-        "//rules/cfg5:toolchains",
-        "//rules/davinci_developer:toolchains",
-        "//rules/dvteam:rules",
-        "//rules/gradle:rules",
-        "//rules/gradle:toolchains",
-        "//rules/ocs:rules",
-    ],
 )

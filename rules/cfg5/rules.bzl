@@ -21,7 +21,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Rules to use DaVinci Configurator 5 from Bazel"""
+"""Rules for cfg5"""
 
 load("//rules/common:create_davinci_tool_workspace.bzl", "create_davinci_tool_workspace")
 #load("//rules/vtt:toolchains.bzl", "generate_tools_vtt")
