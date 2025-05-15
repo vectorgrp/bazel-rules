@@ -18,8 +18,8 @@ ocs(<a href="#ocs-name">name</a>, <a href="#ocs-kwargs">kwargs</a>)
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
-| <a id="ocs-name"></a>name |  <p align="center"> - </p>   |  none |
-| <a id="ocs-kwargs"></a>kwargs |  <p align="center"> - </p>   |  none |
+| <a id="ocs-name"></a>name |  The unique name of this target   |  none  |
+| <a id="ocs-kwargs"></a>kwargs |  All of the attrs of the ocs rule   |  none |
 
 
 
