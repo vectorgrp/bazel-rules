@@ -187,50 +187,9 @@ cfg5_generate_rt_workspace(
 
 ## Configure a toolchain
 
-In a `BUILD.bazel` file refer to the toolchain & platform configuration as follows:
+All toolchain configurations are typically configured within a `BUILD.bazel` file. 
 
-### Execution under Linux
+Please see [DaVinci Configurator 5 toolchain definition](../toolchains.md#davinci-configurator-5-toolchains).
 
-```python
-    cfg5_toolchain(
-        name = "cfg5_linux_impl",
-        cfg5_files = "@sip//:DaVinci_Configurator_5", # External dependency to the Microsar Classic product
-        cfg5cli_path = "@sip//:DaVinciConfigurator/Core/DVCfgCmd", # External dependency to the DaVinci Configurator 5 CLI tool
-    )
 
-    toolchain(
-        name = "cfg5_linux",
-        exec_compatible_with = [
-            "@platforms//os:linux",
-        ],
-        target_compatible_with = [
-            "@platforms//os:linux",
-        ],
-        toolchain = ":cfg5_linux_impl",
-        toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
-    )
-```
-
-### Execution under Windows
-
-```python
-    cfg5_toolchain(
-        name = "cfg5_windows_impl",
-        cfg5_files = "@sip//:DaVinci_Configurator_5", # External dependency to the Microsar Classic product
-        cfg5_path = "@sip//:DaVinciConfigurator/Core/DaVinciCFG.exe", # External dependency to the DaVinci Configurator 5 GUI tool
-        cfg5cli_path = "@sip//:DaVinciConfigurator/Core/DVCfgCmd.exe", # External dependency to the DaVinci Configurator 5 CLI tool
-    )
-
-    toolchain(
-        name = "cfg5_windows",
-        exec_compatible_with = [
-            "@platforms//os:windows",
-        ],
-        target_compatible_with = [
-            "@platforms//os:windows",
-        ],
-        toolchain = ":cfg5_windows_impl",
-        toolchain_type = "@vector_bazel_rules//rules/cfg5:toolchain_type",
-    )
-```
 

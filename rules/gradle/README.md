@@ -63,49 +63,7 @@ In a ```MODULE.bazel``` file add this dependency as follows:
 
 ## Configure a toolchain
 
-In a `BUILD.bazel` file refer to the toolchain & platform configuration as follows:
+All toolchain configurations are typically configured within a `BUILD.bazel` file. 
 
-### Execution under Linux
-
-```python
-    gradle_toolchain(
-        name = "gradle_linux_impl",
-        gradle_label = "@gradle//:bin/gradle",
-        gradle_properties = "@gradle_properties//:gradle.properties", # Instanciated in MODULE.bazel file
-    )
-
-    toolchain(
-        name = "gradle_linux",
-        exec_compatible_with = [
-            "@platforms//os:linux",
-        ],
-        target_compatible_with = [
-            "@platforms//os:linux",
-        ],
-        toolchain = ":gradle_linux_impl",
-        toolchain_type = "@vector_bazel_rules//rules/gradle:toolchain_type",
-    )
-```
-
-### Execution under Windows
-
-```python
-    gradle_toolchain(
-        name = "gradle_windows_impl",
-        gradle_label = "@gradle//:bin/gradle.bat",
-        gradle_properties = "@gradle_properties//:gradle.properties", # Instanciated in MODULE.bazel file
-    )
-
-    toolchain(
-        name = "gradle_windows",
-        exec_compatible_with = [
-            "@platforms//os:windows",
-        ],
-        target_compatible_with = [
-            "@platforms//os:windows",
-        ],
-        toolchain = ":gradle_windows_impl",
-        toolchain_type = "@vector_bazel_rules//rules/gradle:toolchain_type",
-    )
-```
+Please see [Gradle toolchain definition](../toolchains.md#gradle-toolchains).
 

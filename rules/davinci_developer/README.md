@@ -30,46 +30,6 @@ The following showcases an example on how to use a toolchain in your Bazel proje
 
 ## Configure a toolchain
 
-In a `BUILD.bazel` file refer to the toolchain & platform configuration as follows:
+All toolchain configurations are typically configured within a `BUILD.bazel` file. 
 
-### Execution under Linux
-
-```python
-    davinci_developer_toolchain(
-        name = "davinci_developer_linux_impl",
-        davinci_developer_label = "@davinci_developer_linux//:DEVImEx/bin/DVImEx", # External dependency to the DaVinci Developer CLI tool
-    )
-
-    toolchain(
-        name = "davinci_developer_linux",
-        exec_compatible_with = [
-            "@platforms//os:linux",
-        ],
-        target_compatible_with = [
-            "@platforms//os:linux",
-        ],
-        toolchain = ":davinci_developer_linux_impl",
-        toolchain_type = "@vector_bazel_rules//rules/davinci_developer:toolchain_type",
-    )
-```
-
-### Execution under Windows
-
-```python
-    davinci_developer_toolchain(
-      name = "davinci_developer_windows_impl",
-      davinci_developer_path = "X:/Path/To/DaVinci_Developer_Classic/Vx_yz",
-    )
-
-    toolchain(
-      name = "davinci_developer_windows",
-      exec_compatible_with = [
-          "@platforms//os:windows",
-      ],
-      target_compatible_with = [
-          "@platforms//os:windows",
-      ],
-      toolchain = ":davinci_developer_windows_impl",
-      toolchain_type = "@vector_bazel_rules//rules/davinci_developer:toolchain_type",
-    )
-```
+Please see [DaVinci Developer toolchain definition](../toolchains.md#davinci-developer-toolchains).

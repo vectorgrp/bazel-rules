@@ -1,6 +1,6 @@
 # Vector Bazel Rules
 
-This repository contains the Vector Bazel rules.
+This repository contains the Vector Bazel Rules.
 
 In general, it contains the necessary toolchains and custom rules to start running Vector tools such as DaVinci Team in a Bazel environment.
 
@@ -12,7 +12,7 @@ Whether you are creating a large Bazel application or trying out Vector tools in
 
 ## Getting Started
 
-In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the ruleset:
+In a `MODULE.bazel` file add an `http_archive` rule to fetch the ruleset:
 
 ```python
 http_archive(
