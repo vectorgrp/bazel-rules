@@ -5,6 +5,8 @@ This chapter contains DaVinci Developer related toolchain documentation.
 
 ## davinci_developer_toolchain
 
+Usage in `BUILD.bazel` file:
+
 <pre>
 load("@//rules:defs.bzl", "davinci_developer_toolchain")
 

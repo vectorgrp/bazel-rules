@@ -1,9 +1,11 @@
 # Gradle
-This chapter contains Gradle related rules and toolchains documentation. This rules and toolchains are adapted to fit the needs for our Vector products which rely on gradle.
+This chapter contains Gradle related rules and toolchains documentation. These rules and toolchains are adapted to fit the needs for our Vector products which rely on gradle.
 
 <a id="generate_gradle_properties"></a>
 
 ## generate_gradle_properties
+
+Usage in `BUILD.bazel` file:
 
 <pre>
 load("@//rules:defs.bzl", "generate_gradle_properties")
@@ -25,6 +27,8 @@ generate_gradle_properties(<a href="#generate_gradle_properties-name">name</a>, 
 <a id="gradle_toolchain"></a>
 
 ## gradle_toolchain
+
+Usage in `BUILD.bazel` file:
 
 <pre>
 load("@//rules:defs.bzl", "gradle_toolchain")

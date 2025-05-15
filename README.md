@@ -12,7 +12,7 @@ Whether you are creating a large Bazel application or trying out Vector tools in
 
 ## Getting Started
 
-In a `MODULE.bazel` file add an `http_archive` rule to fetch the ruleset:
+In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the ruleset:
 
 ```python
 http_archive(
@@ -30,9 +30,7 @@ Make sure to use ```bazel skylib``` as well. See https://github.com/bazelbuild/b
 Please refer to the appropriate ```rules``` folder for a detailed description in a README.md file.
 
 ## Current Limitations
-- For the DaVinci Configurator 5 rule (rules/cfg5) currently only the Real Target (RT) use case is supported. Therfor all rules related to vVirtualTarget (VTT) (e.g.    ```cfg5_generate_vtt```) are not possible to use.
-- For the DaVinci Team rule (rules/dvteam) there is currently no support for vVirtualTarget (VTT).
-
+We do not support vVirtualtarget (VTT) for our `DaVinci Configurator 5` and `DaVinci DvTeam` rules.
 
 Support for vVirtualTarget (VTT) will be available in a future release of the Vector Bazel rules.
 

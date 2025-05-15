@@ -15,7 +15,7 @@ dvteam(<a href="#dvteam-name">name</a>, <a href="#dvteam-kwargs">kwargs</a>)
 
 Wraps the dvteam with the private_is_windows select statement in place
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |

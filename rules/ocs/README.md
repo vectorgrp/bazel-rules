@@ -1,13 +1,11 @@
 # OCS
 This chapter contains OCS related rules documentation. 
 
-## ocs
-
-Usage in `BUILD.bazel` file:
-
 <a id="ocs"></a>
 
 ## ocs
+
+Usage in `BUILD.bazel` file:
 
 <pre>
 load("@//rules:defs.bzl", "ocs")
@@ -15,7 +13,7 @@ load("@//rules:defs.bzl", "ocs")
 ocs(<a href="#ocs-name">name</a>, <a href="#ocs-kwargs">kwargs</a>)
 </pre>
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 
 | Name  | Description | Default Value |
@@ -37,7 +35,7 @@ load("@//rules:defs.bzl", "cfg5_execute_script_task")
 cfg5_execute_script_task(<a href="#cfg5_execute_script_task-name">name</a>, <a href="#cfg5_execute_script_task-kwargs">kwargs</a>)
 </pre>
 
-**PARAMETERS**
+**ATTRIBUTES**
 
 | Name  | Description | Default Value |
 | :------------- | :------------- | :------------- |
