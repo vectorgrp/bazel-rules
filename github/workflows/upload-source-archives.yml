@@ -1,0 +1,30 @@
+name: Upload Source Archives
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  upload-archives:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Create ZIP archive
+        run: |
+          git archive --format=zip --output=source.zip HEAD
+
+      - name: Create TAR.GZ archive
+        run: |
+          git archive --format=tar.gz --output=source.tar.gz HEAD
+
+      - name: Upload ZIP and TAR.GZ to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            source.zip
+            source.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
