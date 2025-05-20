@@ -26,7 +26,28 @@ jobs:
           files: |
             source.zip
             source.tar.gz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add API link to release description
+        run: |
+          TAG_NAME=${{ github.ref_name }}
+          REPO=${{ github.repository }}
+          API_URL="https://api.github.com/repos/$REPO/releases/tags/$TAG_NAME"
+
+          echo "Updating release description for tag $TAG_NAME"
+
+          # Get the current release body
+          CURRENT_BODY=$(gh api "repos/$REPO/releases/tags/$TAG_NAME" --jq .body)
+
+          # Append the API link if not already present
+          if [[ "$CURRENT_BODY" != *"$API_URL"* ]]; then
+            UPDATED_BODY="$CURRENT_BODY"$'\n\n'"GitHub API link for download count: $API_URL"
+
+            RELEASE_ID=$(gh api "repos/$REPO/releases/tags/$TAG_NAME" --jq .id)
+
+            gh api -X PATCH "repos/$REPO/releases/$RELEASE_ID" \
+              -f body="$UPDATED_BODY"
+          else
+            echo "API link already present, skipping update."
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
