@@ -2,7 +2,7 @@ name: Upload Source Archives
 
 on:
   release:
-    types: [released, prereleased]
+    types: [published]
 
 jobs:
   upload-archives:
