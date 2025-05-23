@@ -18,8 +18,7 @@ In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the 
 http_archive(
     name = "vector_bazel_rules",
     sha256 = "1234567891234567891234567891234567891234567891234567891234567891",
-    url = "https://github.com/vectorgrp/bazel-rules/archive/refs/tags/<tag_version><.zip|.tar.gz>",
-    strip_prefix = "bazel-rules-<tag_version>",
+    url = "https://github.com/vectorgrp/bazel-rules/releases/download/<tag_version>/source<.zip|.tar.gz>",
 )
 ```
 Adapt `<tag_version>` to fetch a distinct release.

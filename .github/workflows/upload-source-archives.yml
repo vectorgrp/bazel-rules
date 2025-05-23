@@ -1,0 +1,53 @@
+name: Upload Source Archives
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  upload-archives:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Create ZIP archive
+        run: |
+          git archive --format=zip --output=source.zip HEAD
+
+      - name: Create TAR.GZ archive
+        run: |
+          git archive --format=tar.gz --output=source.tar.gz HEAD
+
+      - name: Upload ZIP and TAR.GZ to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            source.zip
+            source.tar.gz
+
+      - name: Add Pages link to release description
+        run: |
+          TAG_NAME=${{ github.ref_name }}
+          REPO=${{ github.repository }}
+          PAGES_URL="https://vectorgrp.github.io/bazel-rules/?tag=$TAG_NAME"
+
+          echo "Updating release description for tag $TAG_NAME"
+
+          # Get the current release body
+          CURRENT_BODY=$(gh api "repos/$REPO/releases/tags/$TAG_NAME" --jq .body)
+
+          # Append the Pages link if not already present
+          if [[ "$CURRENT_BODY" != *"$PAGES_URL"* ]]; then
+            UPDATED_BODY="$CURRENT_BODY"$'\n\n'"GitHub Pages link for download count: $PAGES_URL"
+
+            RELEASE_ID=$(gh api "repos/$REPO/releases/tags/$TAG_NAME" --jq .id)
+
+            gh api -X PATCH "repos/$REPO/releases/$RELEASE_ID" \
+              -f body="$UPDATED_BODY"
+          else
+            echo "Pages link already present, skipping update."
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
