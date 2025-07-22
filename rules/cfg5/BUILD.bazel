@@ -36,7 +36,7 @@ toolchain_type(
 
 bzl_library(
     name = "rules",
-    srcs = ["rules.bzl"],
+    srcs = ["rules.bzl", "generate_cc.bzl"],
     visibility = ["//visibility:public"],
     deps = ["//rules/common:create_davinci_tool_workspace"],
 )
