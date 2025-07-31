@@ -224,7 +224,7 @@ def _ocs_impl(ctx):
         cfg5cli_path = cf5gcli,
         output_folder = output_folder,
         script_location = ctx.file.ocs_app.dirname,
-        script_task = "OCS",
+        script_task = ctx.attr.ocs_app_name or "OCS",
         task_args = ocs_args,
         cfg5_args = cfg5_args.replace("$(OUTS)", output_folder),
     )
@@ -264,6 +264,7 @@ ocs_attrs = {
     "cfg5_args": attr.string(doc = "Additional arguments for the cfg5 run"),
     "ocs_app": attr.label(allow_single_file = True, doc = "The .jar file of the ocs app"),
     "dpa_file": attr.label(mandatory = False, allow_single_file = True, doc = "The .dpa file if a project is modified and not created"),
+    "ocs_app_name" : attr.string(mandatory = False, doc = "The name of the ocs app, used to execute the proper script in .jar file"),
     "input_files": attr.label_list(allow_empty = True, allow_files = [".arxml", ".cdd", ".dbc"], doc = "Inputfiles if inputfile update is executed"),
     "davinci_project_files": attr.label_list(allow_empty = True, allow_files = True, doc = "Project files if a project is modified"),
     "ocs_config_files": attr.label_list(allow_empty = True, allow_files = [".json"], doc = "The ocs plugin json files from ocs home directory"),
