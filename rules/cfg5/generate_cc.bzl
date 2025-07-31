@@ -21,7 +21,7 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-"""Rule to generate Config 5 from Baze and return CcInfo"""
+"""Rule to generate DaVinciConfigurator 5 config from Bazel and return CcInfo"""
 
 load("//rules/common:create_davinci_tool_workspace.bzl", "create_davinci_tool_workspace")
 # load("//rules/vtt:toolchains.bzl", "generate_tools_vtt")
@@ -38,15 +38,6 @@ sudo chmod -R 777 {dpa_folder} &&
 """
 
 EXCLUDED_FILES_GENERIC = ["*.json*", "*.sha512*", "*.rc*", "*.mak*", "*.ORT*", "*.html*", "*.oil*", "*.checksum*", "*.arxml*", "*.versioncollection*", "*.xml*", "*.lsl*", "*.executionResult*"]
-EXCLUDED_FILES_RT = [
-    "Mcu_Cfg.h",
-    "Mcu_PBcfg.c",
-    "Port_Cfg.h",
-    "Port_PBcfg.c",
-    "*Rte_Vtt*",
-    "*CANoeEmu*",
-    "*Vtt*",
-]
 EXCLUDED_FILES_VTT = ["vLinkGen_Lcfg.c", "vBrs_Lcfg.c", "BrsTccCfg.h"]
 GEN_ARG_VTT = "--genType=VTT"
 GEN_ARG_RT = "--genType=REAL"
@@ -119,7 +110,7 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
     gen_type = GEN_ARG_RT if GEN_ARG_RT in additional_genargs else GEN_ARG_VTT
     gen_dir = "GenDataVtt" if gen_type == GEN_ARG_VTT else "GenData"
 
-    excluded_files_patterns = EXCLUDED_FILES_GENERIC + EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else EXCLUDED_FILES_GENERIC + EXCLUDED_FILES_RT
+    excluded_files_patterns = EXCLUDED_FILES_GENERIC + EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else EXCLUDED_FILES_GENERIC + ctx.attr.excluded_files
     excluded_files_patterns_string = "--filter \"- **/" + "\" --filter \"- **/".join(excluded_files_patterns) + "\""
 
     if "/" in dpa_folder:
@@ -269,8 +260,9 @@ def _cfg5_generate_workspace_cc_impl(ctx, additional_genargs, tools = []):
 cfg5_generate_workspace_cc_attrs = {
     "dpa_file": attr.label(allow_single_file = [".dpa"], doc = "Dpa project file to start the cfg5 with"),
     "config_files": attr.label_list(allow_files = True, doc = "Additional configuration files to start the cfg5 with"),
-    "genArgs": attr.string_list(doc = "The DaVinciCfgCmd argument options."),
+    "genArgs": attr.string_list(doc = "The DaVinciCfgCmd argument options"),
     "sip": attr.label(doc = "sip location to mark it as a dependency, as it the sip is needed for cfg5 execution"),
+    "excluded_files": attr.string_list(doc = "(Optional) List of files to exclude from the generated files"),
     "private_is_windows": attr.bool(mandatory = True, doc = "Is set automatically to the correct OS value"),
     # "A List of the folders where the config files reside, this cannot be detected automatically, as only the current package can be resolved elegantly"
     "config_folders": attr.string_list(doc = "(Optional) List of config folders that the path will be checked for in each file to create a nested Config folder structure, default is [\"Config\"]", default = ["Config"]),
