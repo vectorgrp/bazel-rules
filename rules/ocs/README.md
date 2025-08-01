@@ -58,6 +58,7 @@ In a `BUILD.bazel` file refer to the rules as follows:
         ],
         dpa_file = "path/to/myproject.dpa", # The dpa file if a project is modified and not created
         ocs_app = "path/to/myocs-app.jar", # The .jar file of the ocs app
+        ocs_app_name = "OcsCustomApp:OCS", # Optional name of ocs app to be executed
         ocs_config_files = glob([ # The ocs plugin json files from ocs home directory
             "path/to/myconfig.json",
         ]),

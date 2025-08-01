@@ -152,6 +152,35 @@ Wraps the cfg5_generate_vtt_workspace with the private_is_windows select stateme
 A cfg5_generate_vtt_workspace_def rule that contains the actual implementation
 
 
+## cfg5_generate_rt_workspace_cc
+
+Generates the DaVinciConfigurator 5 config and return a CcInfo containing all generated source files. This means that no output files need to be defined in the target.
+
+Usage in `BUILD.bazel` file:
+
+<pre>
+load("@//rules:defs.bzl", "cfg5_generate_rt_workspace_cc")
+
+cfg5_generate_rt_workspace_cc(<a href="#cfg5_generate_rt_workspace_cc-name">name</a>, <a href="#cfg5_generate_rt_workspace_cc-kwargs">kwargs</a>)
+</pre>
+
+Wraps the cfg5_generate_rt_workspace_cc with the private_is_windows select statement in place
+
+
+**ATTRIBUTES**
+
+
+| Name  | Description | Default Value |
+| :------------- | :------------- | :------------- |
+| <a id="cfg5_generate_rt_workspace_cc-name"></a>name |  The unique name of this target   |  none |
+| <a id="cfg5_generate_rt_workspace_cc-kwargs"></a>kwargs |  All of the attrs of the cfg5_generate_rt_workspace_cc rule   |  none |
+
+
+**RETURNS**
+
+A cfg5_generate_rt_workspace_cc_def rule that contains the actual implementation
+
+
 # Example usage
 The following showcases an example on how to use a rule and toolchain in your Bazel project environment.
 

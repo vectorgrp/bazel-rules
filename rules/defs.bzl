@@ -26,6 +26,9 @@
 load("//rules/cfg5:rules.bzl", _cfg5_generate_rt = "cfg5_generate_rt", _cfg5_generate_rt_workspace = "cfg5_generate_rt_workspace",
 # _cfg5_generate_vtt = "cfg5_generate_vtt", _cfg5_generate_vtt_workspace = "cfg5_generate_vtt_workspace",
  _start_cfg5_windows = "start_cfg5_windows")
+load("//rules/cfg5:generate_cc.bzl", _cfg5_generate_rt_workspace_cc = "cfg5_generate_rt_workspace_cc",
+#  _cfg5_generate_vtt_workspace_cc = "cfg5_generate_vtt_workspace_cc"
+)
 load("//rules/cfg5:toolchains.bzl", _cfg5_toolchain = "cfg5_toolchain")
 load("//rules/davinci_developer:toolchains.bzl", _davinci_developer_toolchain = "davinci_developer_toolchain")
 load("//rules/dvteam:rules.bzl", _dvteam = "dvteam")
@@ -39,6 +42,8 @@ start_cfg5_windows = _start_cfg5_windows
 cfg5_generate_rt_workspace = _cfg5_generate_rt_workspace
 #cfg5_generate_vtt = _cfg5_generate_vtt
 cfg5_generate_rt = _cfg5_generate_rt
+cfg5_generate_rt_workspace_cc = _cfg5_generate_rt_workspace_cc
+# cfg5_generate_vtt_workspace_cc = _cfg5_generate_vtt_workspace_cc
 
 # DaVinci Team rules
 dvteam = _dvteam
