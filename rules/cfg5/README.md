@@ -42,6 +42,8 @@ start_cfg5_windows(<a href="#start_cfg5_windows-name">name</a>, <a href="#start_
 | <a id="start_cfg5_windows-name"></a>name |  A unique name for this target.   | <a href="https://bazel.build/concepts/labels#target-names">Name</a> | required |  |
 | <a id="start_cfg5_windows-cfg5_args"></a>cfg5_args |  Additional CFG5 arguments   | String | optional |  `""`  |
 | <a id="start_cfg5_windows-dpa"></a>dpa |  The dpa file to start the CFG5 with   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+| <a id="start_cfg5_windows-config_files"></a>config_files |  Additional configuration files to start the cfg5 with   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
+| <a id="start_cfg5_windows-script"></a>script |  Script task which script location is added to the CFG5   | <a href="https://bazel.build/concepts/labels">Label</a> | required |  |
 
 
 ## cfg5_generate_rt

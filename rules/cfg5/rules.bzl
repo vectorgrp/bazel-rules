@@ -317,7 +317,6 @@ $relative_path_to_run_files = "{script_short_path}"
 $relative_path_to_ws_root = "{script_package_path}"
 $cfg5_bin_path = "{cfg5_bin_path}"
 $dpa_file_path = "{dpa_file_path}"
-$additional_arguments = " {cfg5_args}"
 $project_root_path = "{project_root_path}"
 
 
@@ -331,6 +330,9 @@ $ws_root_path = $script_full_path
 for ($i=0; $i -lt $dir_count_to_ws_root; $i++) {{
     $ws_root_path = Split-Path -Parent $ws_root_path
 }}
+
+# Additional arguments need to be resolved after ws_root_path declaration, so that the variable is resolved in case a script is specified
+$additional_arguments = " {cfg5_args}"
 
 $cfg5_abs_path = $ws_root_path + "/" + $cfg5_bin_path
 $dpa_file_abs_path = $ws_root_path + "/" + $dpa_file_path
@@ -346,6 +348,14 @@ powershell.exe -File "{ps_start_script_path}"
 
 def _start_cfg5_windows_impl(ctx):
     info = ctx.toolchains["//rules/cfg5:toolchain_type"]
+    runfiles = [ctx.file.dpa] + ctx.files.config_files
+
+    cfg5_args = ctx.attr.cfg5_args
+    if (ctx.file.script):
+        runfiles.append(ctx.file.script)
+
+        # The $ws_root_path is replaces within the ps1 script!
+        cfg5_args += " --scriptLocations $ws_root_path/" + ctx.file.script.dirname
 
     cfg5_ps_script_file = ctx.actions.declare_file(ctx.label.name + ".ps1")
     powershell_command = _CFG5_START_POWERSHELL_TEMPLATE.format(
@@ -353,7 +363,7 @@ def _start_cfg5_windows_impl(ctx):
         script_package_path = cfg5_ps_script_file.path,
         cfg5_bin_path = info.cfg5_path.path,
         dpa_file_path = ctx.file.dpa.path,
-        cfg5_args = ctx.attr.cfg5_args,
+        cfg5_args = cfg5_args,
         project_root_path = ctx.file.dpa.dirname,
     ).strip()
     ctx.actions.write(cfg5_ps_script_file, powershell_command, is_executable = True)
@@ -367,7 +377,7 @@ def _start_cfg5_windows_impl(ctx):
     return [
         DefaultInfo(
             executable = start_script_wrapper_file,
-            runfiles = ctx.runfiles(files = [cfg5_ps_script_file]),
+            runfiles = ctx.runfiles(files = [cfg5_ps_script_file] + runfiles),
         ),
     ]
 
@@ -379,9 +389,19 @@ start_cfg5_windows = rule(
             mandatory = True,
             doc = "The dpa file to start the CFG5 with",
         ),
+        "config_files": attr.label_list(
+            allow_files = True,
+            mandatory = False,
+            doc = "Additional configuration files to start the cfg5 with",
+        ),
         "cfg5_args": attr.string(
             mandatory = False,
             doc = "Additional CFG5 arguments",
+        ),
+        "script": attr.label(
+            allow_single_file = [".jar"],
+            mandatory = False,
+            doc = "Script task which script location is added to the CFG5",
         ),
     },
     executable = True,
