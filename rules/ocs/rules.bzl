@@ -55,11 +55,11 @@ echo $jsonContent | jq '.' > {inputfile_file} &&
 """
 
 _CFG5_SCRIPT_TEMPLATE_WINDOWS = """
-exit (start-process -WorkingDirectory  ./ -PassThru -NoNewWindow -RedirectStandardOutput {output_folder}/daVinciCfg5.log -Wait {cfg5cli_path} -ArgumentList '--scriptLocations {script_location} -s {script_task} {task_args} {cfg5_args} --verbose').ExitCode
+exit (start-process -WorkingDirectory  ./ -PassThru -NoNewWindow -RedirectStandardOutput {output_folder}/daVinciCfg5.log -Wait {cfg5cli_path} -ArgumentList '--scriptLocations {script_location} -s {script_task} {task_args} {cfg5_args} --ignoreUserScriptLocations --verbose').ExitCode
 """
 
 _CFG5_SCRIPT_TEMPLATE_LINUX = """
-{cfg5cli_path} --scriptLocations {script_location} -s {script_task} {task_args} {cfg5_args} --verbose > {output_folder}/daVinciCfg5.log
+{cfg5cli_path} --scriptLocations {script_location} -s {script_task} {task_args} {cfg5_args} --ignoreUserScriptLocations --verbose > {output_folder}/daVinciCfg5.log
 """
 
 _REMOVE_WRITE_PROTECTION_TEMPLATE_WINDOWS = "Get-ChildItem -Path {} -Recurse | ForEach-Object {{ if ($_.PSIsContainer -eq $false -and $_.GetType().GetProperty('IsReadOnly')) {{ $_.IsReadOnly = $false }} }}; "
