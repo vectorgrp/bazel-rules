@@ -156,7 +156,14 @@ A cfg5_generate_vtt_workspace_def rule that contains the actual implementation
 
 ## cfg5_generate_rt_workspace_cc
 
-Generates the DaVinciConfigurator 5 config and return a CcInfo containing all generated source files. This means that no output files need to be defined in the target.
+Generates the DaVinciConfigurator 5 config and return a CcInfo for each specified component. Component matching is done by the prefix of the generated file. Unmatched files are exposed in the '*_unmapped' target. If no component is specified, one CcInfo is returned containing all generated source files. This means that no output files need to be defined in the target.
+
+Note: The generated output in the .dpa needs to be set to:
+
+```xml
+    <GenData>../GenData</GenData>
+    <GenDataVtt>../GenDataVtt</GenDataVtt>
+```
 
 Usage in `BUILD.bazel` file:
 
@@ -207,8 +214,37 @@ cfg5_generate_rt_workspace(
     genArgs = [ # List of command line argument the DaVinci Configurator 5 CLI supports
         "--help"
     ],
-    generated_files = "FolderPath/ToGeneratedFiles/", # List of files which are output of this rule
-    ,
+    generated_files = [
+        "FolderPath/ToGeneratedFiles/", # List of files which are output of this rule
+    ],
+    sip = "@external_repo//:package", # Path to the Microsar Classic product package
+    target_compatible_with = [ # Platform definition for this target
+        "//platforms:your_platform_definition",
+    ],
+)
+```
+
+```python
+cfg5_generate_rt_workspace_cc(
+    name = "rt_generate_cc", # Name of the Bazel target
+    config_files = [ # Additional configuration files to start the cfg5 with
+        "Config/AUTOSAR/PlatformTypes_AR4.arxml",
+        "Config/VTT/Demo.vttmake",
+        "Config/VTT/Demo.vttproj",
+        "AnotherConfig/Config.arxml",
+    ],
+    config_folders = [ # List of config folders that the path will be checked for in each file to create a nested Config folder structure
+        "Config",
+        "AnotherConfig",
+    ]
+    dpa_file = ":FolderPath/ToDpaProject", # The folder path to your DPA project file (.dpa)
+    genArgs = [ # List of command line argument the DaVinci Configurator 5 CLI supports
+        "--help"
+    ],
+    components = [ # List of components for which a CcInfo is created
+        "Can",
+        "CanIf",
+    ],
     sip = "@external_repo//:package", # Path to the Microsar Classic product package
     target_compatible_with = [ # Platform definition for this target
         "//platforms:your_platform_definition",
