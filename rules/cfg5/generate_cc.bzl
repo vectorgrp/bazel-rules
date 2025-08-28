@@ -327,8 +327,6 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
             arguments = ["-NoProfile", "-NonInteractive", "-WindowStyle", "Hidden", "-File", filter_files_powershell_script_file.path],
         )
 
-        # Remove the separate component directory creation since it's now handled in the main filtering script
-
         compilation_context = cc_common.create_compilation_context(
             headers = depset(
                 [headers_dir] + component_headers_dirs,
@@ -388,12 +386,10 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
 
         ctx.actions.run_shell(
             inputs = depset([dvcfg5_output_dir] + [ctx.executable.rsync]),
-            outputs = [sources_dir, headers_dir] + component_sources_dirs + component_headers_dirs + [rsync_log_file_srcs, rsync_log_file_hrds],  #
+            outputs = [sources_dir, headers_dir] + component_sources_dirs + component_headers_dirs + [rsync_log_file_srcs, rsync_log_file_hrds],
             progress_message = "Filtering files",
             command = filter_cmd_linux,
         )
-
-        # Remove the separate component directory creation since it's now handled in the main filtering script
 
         compilation_context = cc_common.create_compilation_context(
             headers = depset(
@@ -440,11 +436,9 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
     # Collect all output directories for DefaultInfo
     all_output_dirs = [sources_dir, headers_dir] + component_sources_dirs + component_headers_dirs
 
-    # For now, return only the main CcInfo to avoid conflicts
-    # The component-specific directories are still created for future use
     return [
         DefaultInfo(files = depset(all_output_dirs + [dvcfg5_report_file, dvcfg5_log_file])),
-        main_cc_info,  # Return only the main CcInfo
+        main_cc_info,
         MultipleCcInfo(
             main = main_cc_info,
             components = component_cc_infos,
