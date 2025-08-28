@@ -135,8 +135,8 @@ def _cfg5_generate_workspace_impl(ctx, additional_genargs, tools = []):
     return _cfg5_generate(ctx, dpa_path, dpa_folder, dpa_copy, inputs, template, True, additional_genargs, tools)
 
 # def _cfg5_generate_vtt_workspace_impl(ctx):
-    # tools = generate_tools_vtt(ctx)
-    # return _cfg5_generate_workspace_impl(ctx, ["--genType=VTT", "--buildVTTProject"], tools)
+# tools = generate_tools_vtt(ctx)
+# return _cfg5_generate_workspace_impl(ctx, ["--genType=VTT", "--buildVTTProject"], tools)
 
 cfg5_generate_workspace_attrs = {
     "dpa_file": attr.label(allow_single_file = [".dpa"], doc = "Dpa project file to start the cfg5 with"),
