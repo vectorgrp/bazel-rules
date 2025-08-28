@@ -156,7 +156,7 @@ A cfg5_generate_vtt_workspace_def rule that contains the actual implementation
 
 ## cfg5_generate_rt_workspace_cc
 
-Generates the DaVinciConfigurator 5 config and return a CcInfo containing all generated source files. This means that no output files need to be defined in the target.
+Generates the DaVinciConfigurator 5 config and return a CcInfo for each specified component. Component matching is done by the prefix of the generated file. Unmatched files are exposed in the '*_unmapped' target. If no component is specified, one CcInfo is returned containing all generated source files. This means that no output files need to be defined in the target.
 
 Usage in `BUILD.bazel` file:
 
