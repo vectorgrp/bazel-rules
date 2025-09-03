@@ -2,7 +2,7 @@ This repository contains code licensed under two different open-source licenses:
 
 1. **Apache License 2.0**
    - The file "copy_file.bzl" is licensed under the Apache License, Version 2.0.
-   - The external dependencies "rules_dotnet" and "rules_cc" is licensed under the Apache License, Version 2.0.
+   - The external dependencies "rules_dotnet" and "rules_cc" are licensed under the Apache License, Version 2.0.
    - See the full license in `LICENSE-APACHE`.
 
 
