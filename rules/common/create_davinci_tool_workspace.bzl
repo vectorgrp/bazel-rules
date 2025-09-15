@@ -89,12 +89,22 @@ def create_davinci_tool_workspace(ctx, workspace_name, addtional_workspace_files
         # this will put the config files inside the Config folder, this might need to be changed later on
         # but is needed to make sure that no deep paths are created in the workspace creation phase
         if hasattr(file, "path"):
+            base_path = file.path
             for config_folder in config_folders:
-                if (config_folder + "/" in file.path):
-                    base_path = config_folder + "/" + file.path.split("/" + config_folder + "/")[1]
-                    config_file_copy = ctx.actions.declare_file(workspace_name + "/" + base_path)
-                    tool_workspace_config_files.append(config_file_copy)
-                    copy_file(ctx, file, config_file_copy, is_windows)
+                if (config_folder in file.path.split("/")):
+                    if file.path.startswith(config_folder + "/"):
+                        # config folder is in the root
+                        base_path = file.path
+                    else:
+                        # config folder is not in the root
+                        base_path = config_folder + "/" + file.path.split("/" + config_folder + "/")[1]
+                    break
+
+            # TODO: Let's discuss how we want to proceed with this in the future as is a lot of magic for the developer (who is not being aware what happens here). Specially when working with files outside of the current package scope!
+
+            config_file_copy = ctx.actions.declare_file(workspace_name + "/" + base_path)
+            tool_workspace_config_files.append(config_file_copy)
+            copy_file(ctx, file, config_file_copy, is_windows)
         else:
             fail("Config file cannot be copied as it is not a valid File")
 

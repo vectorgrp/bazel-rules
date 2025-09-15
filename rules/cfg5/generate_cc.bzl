@@ -53,174 +53,8 @@ EXCLUDED_FILES_VTT = ["vLinkGen_Lcfg.c", "vBrs_Lcfg.c", "BrsTccCfg.h"]
 GEN_ARG_VTT = "--genType=VTT"
 GEN_ARG_RT = "--genType=REAL"
 
-_FILTER_CMD_LINUX = """
-set -e -o pipefail
-
-# Filter generated files to include only needed files
-mkdir -p "{headers_dir}"
-mkdir -p "{sources_dir}"
-
-# Create component-specific directories
-{component_dirs_creation}
-
-# Function to determine component from filename
-get_component() {{
-    local file_path="$1"
-    local filename=$(basename "$file_path")
-    local base_name=$(basename "$filename" | sed 's/\\.[^.]*$//')
-
-    # List of components
-    components=({components_list})
-
-    for component in "${{components[@]}}"; do
-        if [[ "$base_name" == "${{component}}_"* ]] || [[ "$base_name" == "$component" ]]; then
-            echo "$component"
-            return
-        fi
-    done
-
-    echo "main"
-}}
-
-# Filter and copy header files
-{rsync_exe} --log-file="{rsync_log_file_hdrs}" --verbose --prune-empty-dirs --archive --itemize-changes --quiet --filter "+ */"  {excluded_files_patterns} --filter "+ **/*.h" --filter "- *"   {generator_output_dir} {headers_dir}
-
-# Filter and copy source files
-{rsync_exe} --log-file="{rsync_log_file_srcs}" --verbose --prune-empty-dirs --archive --itemize-changes --quiet --filter "+ */"  {excluded_files_patterns} --filter "+ **/*.c" --filter "+ **/*.asm" --filter "+ **/*.inc" --filter "+ **/*.inl" --filter "+ **/*.S" --filter "+ **/*.s" --filter "+ **/*.a"  {additional_source_file_endings} --filter "- *"   {generator_output_dir} {sources_dir}
-
-# Move component-specific files from main directories to component directories
-# Process headers first
-find {headers_dir} -name "*.h"  | while read -r file; do
-    component=$(get_component "$file")
-
-    # If this file belongs to a specific component, move it to component directory
-    if [ "$component" != "main" ]; then
-        component_headers_dir="{headers_dir}/../generated_headers_$component"
-        if [ -d "$component_headers_dir" ]; then
-            mv "$file" "$component_headers_dir/"
-        fi
-    fi
-done
-# Process sources
-find {sources_dir} -name "*.*" | while read -r file; do
-    component=$(get_component "$file")
-
-    # If this file belongs to a specific component, move it to component directory
-    if [ "$component" != "main" ]; then
-        component_sources_dir="{sources_dir}/../generated_sources_$component"
-        if [ -d "$component_sources_dir" ]; then
-            mv "$file" "$component_sources_dir/"
-        fi
-    fi
-done
-"""
-
-_FILTER_CMD_WINDOWS = """
-$ErrorActionPreference = 'Stop'
-$PSNativeCommandUseErrorActionPreference = $true
-
-try {{
-
-    # List of files to ignore
-    $ignoreList = @({excluded_files})
-
-    # List of components
-    $components = @({components_list})
-
-    # Function to check if a file is in the ignore list
-    function ShouldIgnore {{
-        param (
-            [string]$fileName
-        )
-        return $ignoreList -contains $fileName
-    }}
-
-    # Function to determine which component a file belongs to
-    function GetFileComponent {{
-        param (
-            [string]$filePath
-        )
-
-        $fileName = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
-
-        foreach ($component in $components) {{
-            # Check if filename starts with component name (e.g., Com_*, BswM_*, etc.)
-            if ($fileName -like "${{component}}_*" -or $fileName -eq $component) {{
-                return $component
-            }}
-        }}
-
-        return "main"  # Default to main if no component match
-    }}
-
-    # Create all destination folders
-    $allDirs = @("{sources_dir}", "{headers_dir}"{component_dirs_list})
-    foreach ($dir in $allDirs) {{
-        if (-not (Test-Path -Path $dir)) {{
-            New-Item -ItemType Directory -Path $dir -Force
-        }}
-    }}
-
-    # Process .h files
-    Get-ChildItem -Path {generator_output_dir} -Filter *.h -Recurse | ForEach-Object {{
-        #if (-not (ShouldIgnore -fileName $_.Name)) {{
-            # Always copy to main headers directory first
-            Copy-Item -Path $_.FullName -Destination {headers_dir}
-        #}}
-    }}
-
-    # Define the list of file patterns to include
-    $sourceFilePatterns = @("*.c", "*.asm", "*.inc", "*.inl", "*.S", "*.s", "*.a")
-
-    if ({additional_source_file_endings} -and {additional_source_file_endings} -ne @("")) {{
-        $sourceFilePatterns += {additional_source_file_endings}
-    }}
-
-    # Process source files
-    foreach ($pattern in $sourceFilePatterns) {{
-        Get-ChildItem -Path {generator_output_dir} -Filter $pattern -Recurse | ForEach-Object {{
-            if (-not (ShouldIgnore -fileName $_.Name)) {{
-                # Always copy to main sources directory first
-                Copy-Item -Path $_.FullName -Destination {sources_dir}
-            }}
-        }}
-    }}
-
-    # Move component-specific files from main directories to component directories
-    # Process headers first
-    Get-ChildItem -Path {headers_dir} -Filter *.h | ForEach-Object {{
-        $component = GetFileComponent -filePath $_.FullName
-
-        # If this file belongs to a specific component, move it to component directory
-        if ($component -ne "main") {{
-            $componentHeadersDir = "{headers_dir}/../generated_headers_${{component}}"
-            if (Test-Path $componentHeadersDir) {{
-                Move-Item -Path $_.FullName -Destination $componentHeadersDir
-            }}
-        }}
-    }}
-
-    # Process sources
-    foreach ($pattern in $sourceFilePatterns) {{
-        Get-ChildItem -Path {sources_dir} -Filter $pattern | ForEach-Object {{
-            $component = GetFileComponent -filePath $_.FullName
-
-            # If this file belongs to a specific component, move it to component directory
-            if ($component -ne "main") {{
-                $componentSourcesDir = "{sources_dir}/../generated_sources_${{component}}"
-                if (Test-Path $componentSourcesDir) {{
-                    Move-Item -Path $_.FullName -Destination $componentSourcesDir
-                }}
-            }}
-        }}
-    }}
-
-    Write-Output "Files have been moved successfully."
-}} catch {{
-    Write-Error "An error occurred: $_"
-    exit 1
-}}
-"""
+FILTER_TEMPLATE_WINDOWS = Label("//rules/cfg5:filter_windows.ps1.tpl")
+FILTER_TEMPLATE_LINUX = Label("//rules/cfg5:filter_linux.sh.tpl")
 
 def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_genargs, tools = []):
     info = ctx.toolchains["//rules/cfg5:toolchain_type"]
@@ -301,7 +135,10 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
                 comp_hdr_dir = component_headers_dirs[i]
                 component_dirs_list += ', "{}", "{}"'.format(comp_src_dir.path, comp_hdr_dir.path)
 
-        filter_cmd_windows = _FILTER_CMD_WINDOWS.format(
+        # Read the Windows filter template from external file
+        filter_template_windows = ctx.read_file(FILTER_TEMPLATE_WINDOWS)
+
+        filter_cmd_windows = filter_template_windows.format(
             generator_output_dir = dvcfg5_output_dir.path,
             sources_dir = sources_dir.path,
             headers_dir = headers_dir.path,
@@ -370,7 +207,10 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
         for ignore_file in ignore_files:
             ignore_files_check += 'if [ "$filename" = "{}" ]; then should_ignore=true; fi\n    '.format(ignore_file)
 
-        filter_cmd_linux = _FILTER_CMD_LINUX.format(
+        # Read the Linux filter template from external file
+        filter_template_linux = ctx.read_file(FILTER_TEMPLATE_LINUX)
+
+        filter_cmd_linux = filter_template_linux.format(
             generator_output_dir = dvcfg5_output_dir.path,
             sources_dir = sources_dir.path,
             headers_dir = headers_dir.path,
