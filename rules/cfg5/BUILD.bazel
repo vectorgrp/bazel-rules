@@ -29,6 +29,12 @@ exports_files(
     ),
 )
 
+# Export template files for use in rules
+exports_files([
+    "filter_linux.sh.tpl",
+    "filter_windows.ps1.tpl",
+])
+
 toolchain_type(
     name = "toolchain_type",
     visibility = ["//visibility:public"],
