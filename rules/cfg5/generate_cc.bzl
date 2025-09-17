@@ -67,7 +67,7 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
     gen_type = GEN_ARG_RT if GEN_ARG_RT in additional_genargs else GEN_ARG_VTT
     gen_dir = "GenDataVtt" if gen_type == GEN_ARG_VTT else "GenData"
 
-    excluded_files_patterns = EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else ctx.attr.excluded_files
+    excluded_files_patterns = ctx.attr.excluded_files + (EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else [])
     excluded_files_patterns_string = "--filter \"- **/" + "\" --filter \"- **/".join(excluded_files_patterns) + "\""
 
     additional_source_file_endings = ctx.attr.additional_source_file_endings
@@ -135,23 +135,20 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
                 comp_hdr_dir = component_headers_dirs[i]
                 component_dirs_list += ', "{}", "{}"'.format(comp_src_dir.path, comp_hdr_dir.path)
 
-        # Read the Windows filter template from external file
-        filter_template_windows = ctx.read_file(FILTER_TEMPLATE_WINDOWS)
-
-        filter_cmd_windows = filter_template_windows.format(
-            generator_output_dir = dvcfg5_output_dir.path,
-            sources_dir = sources_dir.path,
-            headers_dir = headers_dir.path,
-            excluded_files = '"' + '","'.join(EXCLUDED_FILES_VTT) + '"' if gen_type == GEN_ARG_VTT else '"' + '","'.join(ctx.attr.excluded_files) + '"',
-            additional_source_file_endings = '"' + '","'.join(ctx.attr.additional_source_file_endings) + '"',
-            components_list = '"' + '","'.join(actual_components) + '"',
-            component_dirs_list = component_dirs_list,
-        )
-
         filter_files_powershell_script_file = ctx.actions.declare_file("filter_files.ps1")
-        ctx.actions.write(
+
+        ctx.actions.expand_template(
+            template = ctx.file.private_filter_template,
             output = filter_files_powershell_script_file,
-            content = filter_cmd_windows,
+            substitutions = {
+                "{generator_output_dir}": dvcfg5_output_dir.path,
+                "{sources_dir}": sources_dir.path,
+                "{headers_dir}": headers_dir.path,
+                "{excluded_files}": '"' + '","'.join(ctx.attr.excluded_files) + ('","' + '","'.join(EXCLUDED_FILES_VTT) + '"' if gen_type == GEN_ARG_VTT else '"'),
+                "{additional_source_file_endings}": '"' + '","'.join(ctx.attr.additional_source_file_endings) + '"',
+                "{components_list}": '"' + '","'.join(actual_components) + '"',
+                "{component_dirs_list}": component_dirs_list,
+            },
             is_executable = True,
         )
 
@@ -202,33 +199,39 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
                 component_dirs_creation += 'mkdir -p "{}"\n'.format(comp_hdr_dir.path)
 
         # Build ignore files check for Linux
-        ignore_files = EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else ctx.attr.excluded_files
+        ignore_files = ctx.attr.excluded_files + (EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else "")
         ignore_files_check = ""
         for ignore_file in ignore_files:
             ignore_files_check += 'if [ "$filename" = "{}" ]; then should_ignore=true; fi\n    '.format(ignore_file)
 
         # Read the Linux filter template from external file
-        filter_template_linux = ctx.read_file(FILTER_TEMPLATE_LINUX)
+        filter_files_bash_script_file = ctx.actions.declare_file("filter_files.sh")
 
-        filter_cmd_linux = filter_template_linux.format(
-            generator_output_dir = dvcfg5_output_dir.path,
-            sources_dir = sources_dir.path,
-            headers_dir = headers_dir.path,
-            rsync_exe = ctx.executable.rsync.path,
-            excluded_files_patterns = excluded_files_patterns_string,
-            additional_source_file_endings = additional_source_file_endings_string,
-            rsync_log_file_srcs = rsync_log_file_srcs.path,
-            rsync_log_file_hdrs = rsync_log_file_hrds.path,
-            components_list = " ".join(['"{}"'.format(comp) for comp in actual_components]),
-            component_dirs_creation = component_dirs_creation,
-            ignore_files_check = ignore_files_check,
+        ctx.actions.expand_template(
+            template = ctx.file.private_filter_template,
+            output = filter_files_bash_script_file,
+            substitutions = {
+                "{generator_output_dir}": dvcfg5_output_dir.path,
+                "{sources_dir}": sources_dir.path,
+                "{headers_dir}": headers_dir.path,
+                "{rsync_exe}": ctx.executable.rsync.path,
+                "{excluded_files_patterns}": excluded_files_patterns_string,
+                "{additional_source_file_endings}": additional_source_file_endings_string,
+                "{rsync_log_file_srcs}": rsync_log_file_srcs.path,
+                "{rsync_log_file_hdrs}": rsync_log_file_hrds.path,
+                "{components_list}": " ".join(['"{}"'.format(comp) for comp in actual_components]),
+                "{component_dirs_creation}": component_dirs_creation,
+                "{ignore_files_check}": ignore_files_check,
+            },
+            is_executable = True,
         )
 
         ctx.actions.run_shell(
-            inputs = depset([dvcfg5_output_dir] + [ctx.executable.rsync]),
+            inputs = depset([dvcfg5_output_dir] + [ctx.executable.rsync] + [filter_files_bash_script_file]),
             outputs = [sources_dir, headers_dir] + component_sources_dirs + component_headers_dirs + [rsync_log_file_srcs, rsync_log_file_hrds],
             progress_message = "Filtering files",
-            command = filter_cmd_linux,
+            command = "bash {}".format(filter_files_bash_script_file.path),
+            use_default_shell_env = True,
         )
 
         compilation_context = cc_common.create_compilation_context(
@@ -301,10 +304,6 @@ def _cfg5_generate_workspace_cc_impl(ctx, additional_genargs, tools = []):
         inputs.extend(ctx.attr.sip.files.to_list())
     return _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_genargs, tools)
 
-# def _cfg5_generate_vtt_workspace_cc_impl(ctx):
-#     tools = generate_tools_vtt(ctx)
-#     return _cfg5_generate_workspace_cc_impl(ctx, ["--genType=VTT", "--buildVTTProject"], tools)
-
 cfg5_generate_workspace_cc_attrs = {
     "dpa_file": attr.label(allow_single_file = [".dpa"], doc = "Dpa project file to start the cfg5 with"),
     "config_files": attr.label_list(allow_files = True, doc = "Additional configuration files to start the cfg5 with"),
@@ -317,37 +316,8 @@ cfg5_generate_workspace_cc_attrs = {
     # "A List of the folders where the config files reside, this cannot be detected automatically, as only the current package can be resolved elegantly"
     "config_folders": attr.string_list(doc = "(Optional) List of config folders that the path will be checked for in each file to create a nested Config folder structure, default is [\"Config\"]", default = ["Config"]),
     "rsync": attr.label(executable = True, cfg = "exec", default = Label("@ape//ape:rsync")),
+    "private_filter_template": attr.label(allow_single_file = True, mandatory = True, doc = "Is set automatically to the correct OS value"),
 }
-
-# cfg5_generate_vtt_workspace_cc_def = rule(
-#     implementation = _cfg5_generate_vtt_workspace_cc_impl,
-#     attrs = cfg5_generate_workspace_cc_attrs,
-#     doc = """
-# Creates a separate cfg5 workspace containing all the given config files and run the cfg5 in this created directory inside the bazel-bin.
-# This rule is wrapped with private_is_windows attribute to separate between OS differences.
-# Used specifically for the vtt use case, as this adds the correct vtt flags to the Cfg5 call automatically.
-# """,
-#     toolchains = ["//rules/cfg5:toolchain_type", "//rules/vtt:toolchain_type"],
-# )
-
-# def cfg5_generate_vtt_workspace_cc(name, **kwargs):
-#     """Wraps the cfg5_generate_vtt_workspace_cc with the private_is_windows select statement in place
-
-#     Args:
-#         name: The unique name of this target
-#         **kwargs: All of the attrs of the cfg5_generate_vtt_workspace_cc rule
-
-#     Returns:
-#         A cfg5_generate_vtt_workspace_cc_def rule that contains the actual implementation
-#     """
-#     cfg5_generate_vtt_workspace_cc_def(
-#         name = name,
-#         private_is_windows = select({
-#             "@bazel_tools//src/conditions:host_windows": True,
-#             "//conditions:default": False,
-#         }),
-#         **kwargs
-#     )
 
 def _cfg5_generate_rt_workspace_cc_impl(ctx):
     return _cfg5_generate_workspace_cc_impl(ctx, ["--genType=REAL"])
@@ -362,6 +332,20 @@ Used specifically for the rt use case, as this adds the correct rt flags to the 
 """,
     toolchains = ["//rules/cfg5:toolchain_type"],
 )
+
+# def _cfg5_generate_vtt_workspace_cc_impl(ctx):
+#     return _cfg5_generate_workspace_cc_impl(ctx, ["--type=VTT"])
+
+# cfg5_generate_vtt_workspace_cc_def = rule(
+#     implementation = _cfg5_generate_vtt_workspace_cc_impl,
+#     attrs = cfg5_generate_workspace_cc_attrs,
+#     doc = """
+# Creates a separate cfg5 workspace containing all the given config files and run the cfg5 in this created directory inside the bazel-bin.
+# This rule is wrapped with private_is_windows attribute to separate between OS differences.
+# Used specifically for the rt use case, as this adds the correct rt flags to the Cfg5 call automatically.
+# """,
+#     toolchains = ["//cfg5:toolchain_type", "//vtt:toolchain_type"],
+# )
 
 def cfg5_generate_rt_workspace_cc(name, components = [], **kwargs):
     """Wraps the cfg5_generate_rt_workspace_cc with the private_is_windows select statement in place
@@ -384,6 +368,10 @@ def cfg5_generate_rt_workspace_cc(name, components = [], **kwargs):
             "@bazel_tools//src/conditions:host_windows": True,
             "//conditions:default": False,
         }),
+        private_filter_template = select({
+            "@bazel_tools//src/conditions:host_windows": FILTER_TEMPLATE_WINDOWS,
+            "//conditions:default": FILTER_TEMPLATE_LINUX,
+        }),
         **kwargs
     )
 
@@ -405,6 +393,53 @@ def cfg5_generate_rt_workspace_cc(name, components = [], **kwargs):
             src = ":" + name,
             component = "main",  # "main" contains all unmapped files
         )
+
+# def cfg5_generate_vtt_workspace_cc(name, components = [], **kwargs):
+#     """Wraps the cfg5_generate_rt_workspace_cc with the private_is_windows select statement in place
+
+#     Args:
+#         name: The unique name of this target
+#         components: List of component names to create separate targets for
+#         **kwargs: All of the attrs of the cfg5_generate_rt_workspace_cc rule
+
+#     Returns:
+#         A cfg5_generate_rt_workspace_cc_def rule that contains the actual implementation
+#         Plus additional targets for each component if specified
+#     """
+
+#     # Create the main target
+#     cfg5_generate_vtt_workspace_cc_def(
+#         name = name,
+#         components = components,
+#         private_is_windows = select({
+#             "@bazel_tools//src/conditions:host_windows": True,
+#             "//conditions:default": False,
+#         }),
+#         private_filter_template = select({
+#             "@bazel_tools//src/conditions:host_windows": FILTER_TEMPLATE_WINDOWS,
+#             "//conditions:default": FILTER_TEMPLATE_LINUX,
+#         }),
+#         **kwargs
+#     )
+
+#     # Filter and sort actual components (excluding "main")
+#     actual_components = sorted([comp for comp in components if comp != "main"])
+
+#     # Create individual targets for each actual component
+#     for component in actual_components:
+#         extract_component_cc_info(
+#             name = name + "_" + component,
+#             src = ":" + name,
+#             component = component,
+#         )
+
+#     # Always create a generic target for unmapped sources and headers
+#     if actual_components:  # Only create unmapped target if we have components
+#         extract_component_cc_info(
+#             name = name + "_unmapped",
+#             src = ":" + name,
+#             component = "main",  # "main" contains all unmapped files
+#         )
 
 # Helper rule to extract component CcInfo and source files
 def _extract_component_cc_info_impl(ctx):
