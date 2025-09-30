@@ -72,10 +72,10 @@ def create_davinci_tool_workspace(ctx, workspace_name, addtional_workspace_files
     """
 
     addtional_workspace_files_copy = []
-    for file in addtional_workspace_files:
+    for file in addtional_workspace_files + config_files:
         file_copy = file
         if hasattr(file, "basename"):
-            file_copy = ctx.actions.declare_file(workspace_name + "/" + file.basename)
+            file_copy = ctx.actions.declare_file(workspace_name + "/" + file.path)
 
             # copies the file and renames it with an xml extension, this is to workaround the bazel restrictions of having readonly files in its output directory if the files are an action output
             # this way we can run dvteam on the dpa file without running into a problem as the copy is used for execution
@@ -90,15 +90,15 @@ def create_davinci_tool_workspace(ctx, workspace_name, addtional_workspace_files
         # but is needed to make sure that no deep paths are created in the workspace creation phase
         if hasattr(file, "path"):
             base_path = file.path
-            for config_folder in config_folders:
-                if (config_folder in file.path.split("/")):
-                    if file.path.startswith(config_folder + "/"):
-                        # config folder is in the root
-                        base_path = file.path
-                    else:
-                        # config folder is not in the root
-                        base_path = config_folder + "/" + file.path.split("/" + config_folder + "/")[1]
-                    break
+            # for config_folder in config_folders:
+            #     if (config_folder in file.path.split("/")):
+            #         if file.path.startswith(config_folder + "/"):
+            #             # config folder is in the root
+            #             base_path = file.path
+            #         else:
+            #             # config folder is not in the root
+            #             base_path = config_folder + "/" + file.path.split("/" + config_folder + "/")[1]
+            #         break
 
             # TODO: Let's discuss how we want to proceed with this in the future as is a lot of magic for the developer (who is not being aware what happens here). Specially when working with files outside of the current package scope!
 

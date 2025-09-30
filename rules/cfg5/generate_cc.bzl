@@ -60,7 +60,8 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
     info = ctx.toolchains["//rules/cfg5:toolchain_type"]
 
     dvcfg5_report_file_name = "DVCfg5ReportFile.xml"
-    dvcfg5_report_file = ctx.actions.declare_file(ctx.label.name + "/" + dvcfg5_report_file_name)
+    dvcfg5_report_path = dpa_folder + "/" + dvcfg5_report_file_name  # Generate the report next to the .dpa file
+    dvcfg5_report_file = ctx.actions.declare_file(dvcfg5_report_path)
 
     # Using the gen args to parse the gen_type to use the correct filtering for vtt and rt
     # Currently this rule is limited by ONE generation output per vtt and rt as the root level output directory is used
@@ -73,13 +74,11 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
     additional_source_file_endings = ctx.attr.additional_source_file_endings
     additional_source_file_endings_string = "--filter \"+ **/" + "\" --filter \"+ **/".join(additional_source_file_endings) + "\""
 
-    if "/" in dpa_folder:
-        dvcfg5_log_file_name = dpa_folder.split("/")[-1] + "/daVinciCfg5.log"
-    else:
-        dvcfg5_log_file_name = dpa_folder + "/daVinciCfg5.log"
+    dvcfg5_log_file_name = dpa_folder + "/daVinciCfg5.log"
     dvcfg5_log_file = ctx.actions.declare_file(dvcfg5_log_file_name)
+    dvcfg5_output_dir = ctx.actions.declare_directory(dpa_folder + "/../" + gen_dir)
 
-    dvcfg5_output_dir = ctx.actions.declare_directory(gen_dir)
+    dpa_folder = dvcfg5_log_file.dirname  # This will add the bazel-out path to the relative path
 
     sources_dir = ctx.actions.declare_directory(ctx.label.name + "/generated_sources")
     headers_dir = ctx.actions.declare_directory(ctx.label.name + "/generated_headers")
@@ -109,7 +108,7 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
     if ctx.attr.private_is_windows:
         # For Windows we have to hack the path to the dvcfg5_report_file, because we switch the working directory to the dpa_folder when executing DVCfg5.
         # This leads to the problem that the tool saves the report on the wrong place because the output path is relative.
-        report_file_path = "../" + ctx.label.name + "/" + dvcfg5_report_file.basename
+        report_file_path = dvcfg5_report_file.basename
         command = template.format(
             dpa_path = dpa_path,
             dpa_folder = dpa_folder,
@@ -294,7 +293,10 @@ def _cfg5_generate_workspace_cc_impl(ctx, additional_genargs, tools = []):
 
     dpa_copy = _cfg_workspace.addtional_workspace_files[0]
     dpa_path = dpa_copy.basename
-    dpa_folder = dpa_copy.dirname
+
+    # dpa_folder = dpa_copy.dirname
+    dpa_folder = ctx.label.name + "_cfg_workspace/" + ctx.file.dpa_file.dirname
+
     inputs = _cfg_workspace.files + _cfg_workspace.addtional_workspace_files
     template = _CFG5_GENERATE_TEMPLATE_LINUX_WORKSPACE
     if ctx.attr.private_is_windows:
