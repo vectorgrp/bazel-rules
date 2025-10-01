@@ -199,7 +199,7 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
                 component_dirs_creation += 'mkdir -p "{}"\n'.format(comp_hdr_dir.path)
 
         # Build ignore files check for Linux
-        ignore_files = ctx.attr.excluded_files + (EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else "")
+        ignore_files = ctx.attr.excluded_files + (EXCLUDED_FILES_VTT if gen_type == GEN_ARG_VTT else [])
         ignore_files_check = ""
         for ignore_file in ignore_files:
             ignore_files_check += 'if [ "$filename" = "{}" ]; then should_ignore=true; fi\n    '.format(ignore_file)
@@ -226,12 +226,12 @@ def _cfg5_generate_cc(ctx, dpa_path, dpa_folder, inputs, template, additional_ge
             is_executable = True,
         )
 
-        ctx.actions.run_shell(
+        ctx.actions.run(
+            executable = "/bin/bash",
             inputs = depset([dvcfg5_output_dir] + [ctx.executable.rsync] + [filter_files_bash_script_file]),
             outputs = [sources_dir, headers_dir] + component_sources_dirs + component_headers_dirs + [rsync_log_file_srcs, rsync_log_file_hrds],
             progress_message = "Filtering files",
-            command = "bash {}".format(filter_files_bash_script_file.path),
-            use_default_shell_env = True,
+            arguments = [filter_files_bash_script_file.path],
         )
 
         compilation_context = cc_common.create_compilation_context(
