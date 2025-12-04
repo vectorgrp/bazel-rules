@@ -7,6 +7,7 @@ def _get_url(url, upload_module_name, version):
     if url in [DEFAULT_DEV_GIT_UPLOAD_URL, DEFAULT_PROD_GIT_UPLOAD_URL]:
         if upload_module_name == "" or version == "":
             fail("If the default url is used, upload_module_name and version need to be set.")
+
         # GitHub Releases URL pattern: https://github.com/vectorgrp/bazel-rules/releases/download/<module_name>/<version>/<module_name>.tar.gz
         # For staging: https://github.com/vectorgrp/bazel-rules/releases/download/staging/<module_name>/<version>/<module_name>.tar.gz
         return url + "/" + upload_module_name + "/" + version + "/" + upload_module_name + ".tar.gz"
