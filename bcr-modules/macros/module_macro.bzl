@@ -29,6 +29,7 @@ def _module_macro_impl(
     if url == "":
         # GitHub Releases URL pattern: .../download/staging/<module>/<version>/<module>.tar.gz
         dev_archive_url = DEFAULT_DEV_GIT_UPLOAD_URL + "/" + name + "/" + module_version + "/" + name + ".tar.gz"
+
         # GitHub Releases URL pattern: .../download/<module>/<version>/<module>.tar.gz
         prod_archive_url = DEFAULT_PROD_GIT_UPLOAD_URL + "/" + name + "/" + module_version + "/" + name + ".tar.gz"
 

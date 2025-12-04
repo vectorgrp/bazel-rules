@@ -23,14 +23,17 @@
 
 """ Core rules for using the DaVinci Configurator 5 with bazel"""
 
-load("generate.bzl", _cfg5_generate_rt = "cfg5_generate_rt",
-#  _cfg5_generate_vtt = "cfg5_generate_vtt"
- )
+load(
+    "generate.bzl",
+    _cfg5_generate_rt = "cfg5_generate_rt",
+    #  _cfg5_generate_vtt = "cfg5_generate_vtt"
+)
 load("private/common/component_refs.bzl", _get_supported_component_refs = "get_supported_component_refs")
 load("private/start.bzl", _start_cfg5_windows = "start_cfg5_windows")
 load("private/toolchains.bzl", _cfg5_toolchain = "cfg5_toolchain")
 
 cfg5_generate_rt = _cfg5_generate_rt
+
 # cfg5_generate_vtt = _cfg5_generate_vtt
 cfg5_toolchain = _cfg5_toolchain
 get_supported_component_refs = _get_supported_component_refs

@@ -23,4 +23,3 @@ python.toolchain(
     is_default = True,
     python_version = "3.10",
 )
-
