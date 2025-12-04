@@ -1,0 +1,77 @@
+name: Validation
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ['*']
+
+jobs:
+  buildifier_check:
+    name: Buildifier Format Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.5
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Run Buildifier Check
+        run: bazel run //:buildifier_check
+
+  compare_modules:
+    name: Compare Module Registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.5
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Compare Modules with Registry
+        run: |
+          if [ -f ./tools/compare_modules.sh ]; then
+            chmod +x ./tools/compare_modules.sh
+            ./tools/compare_modules.sh bcr-modules/modules vector-bazel-central-registry/modules
+          else
+            echo "compare_modules.sh not found, skipping comparison"
+          fi
+
+  check_integrity:
+    name: Check Module Integrity Hashes
+    runs-on: ubuntu-latest
+    continue-on-error: true  # Allow failure (warning only)
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.5
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: List Modules Without Integrity Hashes
+        run: |
+          echo "=== Modules without integrity hashes ==="
+          bazel query 'kind(source_json, //bcr-modules/modules/...)' --output=label 2>/dev/null | while read target; do
+            # Check if target has integrity attribute set
+            module_name=$(echo "$target" | sed 's/.*modules\/\([^/]*\).*/\1/')
+            if ! bazel query "attr('integrity', 'sha256-.+', $target)" --output=label 2>/dev/null | grep -q .; then
+              echo "  ⚠️  $module_name (target: $target)"
+            fi
+          done
+          echo ""
+          echo "ℹ️  These modules will be rebuilt on each run. Add integrity hashes after first upload for better performance."

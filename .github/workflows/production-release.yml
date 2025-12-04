@@ -1,0 +1,189 @@
+name: Production Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      modules:
+        description: 'Modules to release (comma-separated, e.g., "rules_cfg5:0.0.2,rules_common:0.2.0" or "all")'
+        required: true
+        default: 'all'
+
+jobs:
+  upload_production_modules:
+    name: Upload Modules to Production
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required for creating releases
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.5
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Build All Module Archives
+        run: |
+          echo "Building all module archives..."
+          bazel build //bcr-modules/modules/...
+
+      - name: Upload Production Modules
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          input_modules="${{ github.event.inputs.modules }}"
+          
+          echo "Processing module release request: $input_modules"
+          
+          # Determine which modules to upload
+          modules_to_upload=""
+          
+          if [ "$input_modules" == "all" ]; then
+            echo "Uploading ALL modules..."
+            
+            for module_dir in bcr-modules/modules/*/; do
+              module_name=$(basename "$module_dir")
+              [ ! -d "$module_dir" ] && continue
+              
+              for version_dir in "$module_dir"*/; do
+                [[ "$version_dir" == *"/srcs/" ]] && continue
+                version=$(basename "$version_dir")
+                
+                if [ -f "${version_dir}BUILD.bazel" ]; then
+                  modules_to_upload="${modules_to_upload}${module_name}:${version} "
+                  echo "  📦 Queued: ${module_name} v${version}"
+                fi
+              done
+            done
+          else
+            echo "Uploading specified modules..."
+            
+            # Parse comma-separated input
+            IFS=',' read -ra MODULES <<< "$input_modules"
+            for module_version in "${MODULES[@]}"; do
+              module_version=$(echo "$module_version" | xargs)  # Trim whitespace
+              modules_to_upload="${modules_to_upload}${module_version} "
+              echo "  📦 Queued: ${module_version}"
+            done
+          fi
+          
+          if [ -z "$modules_to_upload" ]; then
+            echo "❌ No modules to upload"
+            exit 1
+          fi
+          
+          # Upload each module
+          for module_version in $modules_to_upload; do
+            module_name="${module_version%%:*}"
+            version="${module_version##*:}"
+            
+            echo ""
+            echo "🚀 Uploading ${module_name} v${version} to production..."
+            
+            # Build the module archive
+            archive_path="bazel-bin/bcr-modules/modules/${module_name}/${version}/${module_name}.zip"
+            
+            if [ ! -f "$archive_path" ]; then
+              echo "❌ Archive not found: $archive_path"
+              continue
+            fi
+            
+            # Create GitHub Release for production
+            tag_name="${module_name}/${version}"
+            release_name="${module_name} ${version}"
+            
+            # Check if release already exists
+            if gh release view "$tag_name" >/dev/null 2>&1; then
+              echo "⚠️  Release $tag_name already exists!"
+              echo "   Use the GitHub web interface to delete it first if you want to recreate it."
+              continue
+            fi
+            
+            # Create stable release
+            gh release create "$tag_name" \
+              --title "$release_name" \
+              --notes "Production release of ${module_name} version ${version}
+
+            **Release Information:**
+            - Module: \`${module_name}\`
+            - Version: \`${version}\`
+            - Commit: \`${{ github.sha }}\`
+            - Released by: @${{ github.actor }}
+            
+            **Download:**
+            \`\`\`
+            https://github.com/${{ github.repository }}/releases/download/${module_name}/${version}/${module_name}.tar.gz
+            \`\`\`" \
+              --latest=false \
+              "$archive_path#${module_name}.tar.gz"
+            
+            echo "✅ Uploaded ${module_name} v${version} to production"
+          done
+          
+          echo ""
+          echo "🎉 All production uploads complete!"
+
+      - name: Validate Production URLs
+        run: |
+          echo "Validating uploaded production archives..."
+          
+          input_modules="${{ github.event.inputs.modules }}"
+          
+          if [ "$input_modules" == "all" ]; then
+            for module_dir in bcr-modules/modules/*/; do
+              module_name=$(basename "$module_dir")
+              [ ! -d "$module_dir" ] && continue
+              
+              for version_dir in "$module_dir"*/; do
+                [[ "$version_dir" == *"/srcs/" ]] && continue
+                version=$(basename "$version_dir")
+                
+                if [ -f "${version_dir}BUILD.bazel" ]; then
+                  url="https://github.com/${{ github.repository }}/releases/download/${module_name}/${version}/${module_name}.tar.gz"
+                  
+                  echo "  Checking: $url"
+                  if curl --output /dev/null --silent --head --fail "$url"; then
+                    echo "    ✅ Accessible"
+                  else
+                    echo "    ❌ Failed to access"
+                    exit 1
+                  fi
+                fi
+              done
+            done
+          else
+            IFS=',' read -ra MODULES <<< "$input_modules"
+            for module_version in "${MODULES[@]}"; do
+              module_version=$(echo "$module_version" | xargs)
+              module_name="${module_version%%:*}"
+              version="${module_version##*:}"
+              
+              url="https://github.com/${{ github.repository }}/releases/download/${module_name}/${version}/${module_name}.tar.gz"
+              
+              echo "  Checking: $url"
+              if curl --output /dev/null --silent --head --fail "$url"; then
+                echo "    ✅ Accessible"
+              else
+                echo "    ❌ Failed to access"
+                exit 1
+              fi
+            done
+          fi
+          
+          echo "✅ All production URLs validated successfully"
+
+      - name: Trigger Registry Update
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'registry-update.yml',
+              ref: 'main'
+            });
+            console.log('✅ Triggered registry update workflow');

@@ -1,0 +1,47 @@
+load("@rules_pkg//:mappings.bzl", "pkg_files")
+load("//bcr-modules/macros:module_macro.bzl", "module")
+load("//bcr-modules/macros:upload_macro.bzl", "module_upload")
+
+package(default_visibility = ["//visibility:public"])
+
+module_upload(
+    name = "upload",
+    archive = ":rules_dvteam",
+    redeploy_if_exists = "true",
+    upload_module_name = "rules_dvteam",
+    version = "0.0.1",
+)
+
+pkg_files(
+    name = "private",
+    srcs = [
+        "//bcr-modules/modules/rules_dvteam/srcs:private/rules.bzl",
+    ],
+    prefix = "private",
+)
+
+pkg_files(
+    name = "public",
+    srcs = [
+        "//bcr-modules/modules/rules_dvteam/srcs:BUILD.bazel",
+        "//bcr-modules/modules/rules_dvteam/srcs:MODULE.bazel",
+        "//bcr-modules/modules/rules_dvteam/srcs:defs.bzl",
+    ],
+)
+
+module(
+    name = "rules_dvteam",
+    additional_dependencies = [
+        "rules_common@0.2.0",
+        "rules_vtt@0.0.1",
+        "rules_cfg5@0.0.2",
+        "rules_gradle@0.0.1",
+        "rules_davinci_developer@0.0.1",
+    ],
+    integrity = "sha256-JRnEgM1HoQgwcKoiIHPkaPPlG7II7OaMZnIeX/HbMHY=",
+    module_version = "0.0.1",
+    pkg_files_targets = [
+        "public",
+        "private",
+    ],
+)

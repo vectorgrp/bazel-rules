@@ -1,0 +1,140 @@
+name: Staging Release
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+jobs:
+  upload_staging_modules:
+    name: Upload Modules to Staging
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true && github.event.pull_request.draft == false
+    permissions:
+      contents: write  # Required for creating releases
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.5
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Build All Module Archives
+        run: |
+          echo "Building all module archives..."
+          bazel build //bcr-modules/modules/...
+
+      - name: Upload Staging Modules
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Find all modules without integrity hashes (new/modified modules)
+          echo "Finding modules to upload..."
+          
+          modules_to_upload=""
+          for module_dir in bcr-modules/modules/*/; do
+            module_name=$(basename "$module_dir")
+            
+            # Skip if not a directory
+            [ ! -d "$module_dir" ] && continue
+            
+            # Find version directories
+            for version_dir in "$module_dir"*/; do
+              # Skip srcs directory
+              [[ "$version_dir" == *"/srcs/" ]] && continue
+              
+              version=$(basename "$version_dir")
+              
+              # Check if BUILD.bazel exists
+              if [ -f "${version_dir}BUILD.bazel" ]; then
+                # Check if module has integrity hash
+                if ! grep -q 'integrity = "sha256-' "${version_dir}BUILD.bazel"; then
+                  modules_to_upload="${modules_to_upload}${module_name}:${version} "
+                  echo "  📦 Queued: ${module_name} v${version}"
+                fi
+              fi
+            done
+          done
+          
+          if [ -z "$modules_to_upload" ]; then
+            echo "ℹ️  No modules need uploading (all have integrity hashes)"
+            exit 0
+          fi
+          
+          # Upload each module
+          for module_version in $modules_to_upload; do
+            module_name="${module_version%%:*}"
+            version="${module_version##*:}"
+            
+            echo ""
+            echo "🚀 Uploading ${module_name} v${version} to staging..."
+            
+            # Build the module archive
+            archive_path="bazel-bin/bcr-modules/modules/${module_name}/${version}/${module_name}.zip"
+            
+            if [ ! -f "$archive_path" ]; then
+              echo "❌ Archive not found: $archive_path"
+              continue
+            fi
+            
+            # Create GitHub Release for staging
+            tag_name="staging/${module_name}/${version}"
+            release_name="Staging: ${module_name} ${version}"
+            
+            # Check if release already exists
+            if gh release view "$tag_name" >/dev/null 2>&1; then
+              echo "ℹ️  Release $tag_name already exists, deleting..."
+              gh release delete "$tag_name" --yes
+            fi
+            
+            # Create pre-release
+            gh release create "$tag_name" \
+              --title "$release_name" \
+              --notes "Staging release for ${module_name} version ${version}
+
+            **⚠️ This is a development/staging release**
+            
+            Uploaded from PR #${{ github.event.pull_request.number }}
+            Commit: ${{ github.sha }}" \
+              --prerelease \
+              "$archive_path#${module_name}.tar.gz"
+            
+            echo "✅ Uploaded ${module_name} v${version} to staging"
+          done
+          
+          echo ""
+          echo "🎉 All staging uploads complete!"
+
+      - name: Validate Staging URLs
+        run: |
+          echo "Validating uploaded staging archives..."
+          
+          for module_dir in bcr-modules/modules/*/; do
+            module_name=$(basename "$module_dir")
+            [ ! -d "$module_dir" ] && continue
+            
+            for version_dir in "$module_dir"*/; do
+              [[ "$version_dir" == *"/srcs/" ]] && continue
+              version=$(basename "$version_dir")
+              
+              if [ -f "${version_dir}BUILD.bazel" ]; then
+                if ! grep -q 'integrity = "sha256-' "${version_dir}BUILD.bazel"; then
+                  url="https://github.com/${{ github.repository }}/releases/download/staging/${module_name}/${version}/${module_name}.tar.gz"
+                  
+                  echo "  Checking: $url"
+                  if curl --output /dev/null --silent --head --fail "$url"; then
+                    echo "    ✅ Accessible"
+                  else
+                    echo "    ❌ Failed to access"
+                    exit 1
+                  fi
+                fi
+              fi
+            done
+          done
+          
+          echo "✅ All staging URLs validated successfully"

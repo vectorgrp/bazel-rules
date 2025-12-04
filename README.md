@@ -1,43 +1,69 @@
-# Vector Bazel Rules
+# Vector Bazel Repository
 
-This repository contains the Vector Bazel Rules.
+A comprehensive Bazel monorepo for developing, building, and managing custom Bazel rules and modules used across Vector projects. This repository provides a streamlined workflow for creating custom modules, packaging them into archives, uploading to artifact registries, and maintaining a central module registry.
 
-In general, it contains the necessary toolchains and custom rules to start running Vector tools such as DaVinci Team in a Bazel environment.
+## Consumption of Vector Bazel rules
 
-## Who should use these rules?
+To consume the rules defined in this repository, you need to register the custom Bazel Central Registry (BCR) located in this repository.
 
-Everyone who wants to integrate Vector tools into their Bazel project.
+**Configuration Steps:**
 
-Whether you are creating a large Bazel application or trying out Vector tools in a smaller Bazel project, these rules will streamline your tool integration workflow.
+1.  **Update `.bazelrc`**: Add the following flag to your project's `.bazelrc` file to point Bazel to the raw content of the registry directory.
 
-## Getting Started
+    ```properties
+    common --registry=https://raw.githubusercontent.com/vectorgrp/bazel-rules/main/vector-bazel-central-registry
+    ```
 
-In a `WORKSPACE` or `MODULE.bazel` file add an `http_archive` rule to fetch the ruleset:
+2.  **Add Dependencies**: In your `MODULE.bazel` file, declare the dependencies you need using `bazel_dep`.
 
-```python
-http_archive(
-    name = "vector_bazel_rules",
-    sha256 = "1234567891234567891234567891234567891234567891234567891234567891",
-    url = "https://github.com/vectorgrp/bazel-rules/releases/download/<tag_version>/source<.zip|.tar.gz>",
-)
+    ```starlark
+    bazel_dep(name = "rules_common", version = "0.2.0")
+    ```
+
+## Project Overview
+
+This repository is structured around three main development areas:
+
+### Core Components
+
+- **`bcr-modules/`** - Custom Bazel module development and packaging
+  - Contains module definitions, build configurations, and upload targets
+  - Uses extensive Bazel macros for automated archive building and registry management
+  - Recommended to use VS Code's Bazel Targets extension for managing build targets
+
+- **`rules/`** - Custom Bazel rules development
+  - Houses custom rule definitions and implementations
+  - Used for developing reusable build logic across projects
+
+- **`vector-bazel-central-registry/`** - Module registry management
+  - Maintains the central registry of all custom modules
+  - Automatically updated via Bazel targets - **do not edit manually**
+  - Updates performed via: `bazel run //bcr-modules/modules/<module_name>:<module_name>.add_to_repo`
+
+### Supporting Infrastructure
+
+- **`tools/`** - Custom scripts for module management and automation
+- **`docs/`** - Comprehensive documentation and guides
+- **`.github/`** - CI/CD configuration with GitHub Actions workflows
+
+## Repository Structure
+
 ```
-Adapt `<tag_version>` to fetch a distinct release.
-
-Make sure to use ```bazel skylib``` as well. See https://github.com/bazelbuild/bazel-skylib/releases for details.
-
-## Rule & Toolchain Usage
-
-Please refer to the appropriate ```rules``` folder for a detailed description in a README.md file.
-
-## Current Limitations
-We do not support vVirtualtarget (VTT) for our `DaVinci Configurator 5` and `DaVinci DvTeam` rules.
-
-Support for vVirtualTarget (VTT) will be available in a future release of the Vector Bazel rules.
-
-## Release
-
-Some rules are interdependent, so all available rules and toolchains are published in one package.
-
-## Bazel module
-
-Currently we do not provide Bazel modules (bzlmod).
+├── bcr-modules/                    # Module development and packaging
+│   ├── macros/                     # Bazel macros for module automation
+│   │   ├── add_module_macro.bzl    # Registry integration macro
+│   │   ├── module_macro.bzl        # Module packaging macro
+│   │   └── upload_macro.bzl        # Upload automation macro
+│   ├── modules/                    # Individual module definitions
+│   │   ├── rules_common/           # Example module
+│   │   │   ├── 0.2.0/              # Version-specific configuration
+│   │   │   ├── BUILD.bazel         # Module build definition
+│   │   │   └── *.MODULE.bazel      # Module dependencies
+│   │   └── [other modules]/
+│   ├── rules/                      # Module build rules
+│   └── BUILD.bazel.tpl             # Default BUILD file template
+├── vector-bazel-central-registry/  # Central module registry
+├── tools/                          # Management scripts
+├── docs/                           # Documentation and guides
+└── .github/                        # CI/CD configuration
+```
