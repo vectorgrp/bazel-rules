@@ -1,10 +1,10 @@
 name: Staging Release
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [closed]
     branches: [main]
-  workflow_dispatch:
 
 jobs:
   upload_staging_modules:
@@ -75,7 +75,7 @@ jobs:
             echo "🚀 Uploading ${module_name} v${version} to staging..."
             
             # Build the module archive
-            archive_path="bazel-bin/bcr-modules/modules/${module_name}/${version}/${module_name}.zip"
+            archive_path="bazel-bin/bcr-modules/modules/${module_name}/${version}/${module_name}.tar.gz"
             
             if [ ! -f "$archive_path" ]; then
               echo "❌ Archive not found: $archive_path"
@@ -99,7 +99,7 @@ jobs:
 
             **⚠️ This is a development/staging release**
             
-            Uploaded from PR #${{ github.event.pull_request.number }}
+            Triggered by: ${{ github.event_name }}
             Commit: ${{ github.sha }}" \
               --prerelease \
               "$archive_path#${module_name}.tar.gz"
