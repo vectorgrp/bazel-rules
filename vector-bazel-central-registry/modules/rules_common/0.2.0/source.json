@@ -1,4 +1,4 @@
 {
-    "url": "",
-    "integrity": ""
+    "url": "https://github.com/vectorgrp/bazel-rules/releases/download/rules_common/0.2.0/rules_common.tar.gz",
+    "integrity": "sha256:7bb625b033b0e7ab5934909ff4147f45c4c368c487ffa6d2c0b1a38997144340"
 }
