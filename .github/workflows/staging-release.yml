@@ -4,12 +4,13 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   upload_staging_modules:
     name: Upload Modules to Staging
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.draft == false
+    if: (github.event.pull_request.merged == true && github.event.pull_request.draft == false) || github.event_name == 'workflow_dispatch'
     permissions:
       contents: write  # Required for creating releases
     steps:
