@@ -1,15 +1,14 @@
 name: Staging Release
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  push:
+    branches: [module-based-clean]
 
 jobs:
   upload_staging_modules:
     name: Upload Modules to Staging
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.draft == false
+    if: (github.event.pull_request.merged == true && github.event.pull_request.draft == false) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     permissions:
       contents: write  # Required for creating releases
     steps:
@@ -98,7 +97,7 @@ jobs:
 
             **⚠️ This is a development/staging release**
             
-            Uploaded from PR #${{ github.event.pull_request.number }}
+            Triggered by: ${{ github.event_name }}
             Commit: ${{ github.sha }}" \
               --prerelease \
               "$archive_path#${module_name}.tar.gz"
