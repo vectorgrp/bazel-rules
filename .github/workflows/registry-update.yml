@@ -1,0 +1,110 @@
+name: Update Registry
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Production Release"]
+    types: [completed]
+
+jobs:
+  update_bcr_modules:
+    name: Update Bazel Central Registry
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    permissions:
+      contents: write  # Required for pushing commits
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0  # Full history for proper git operations
+
+      - name: Setup Bazel
+        uses: bazel-contrib/setup-bazel@0.8.5
+        with:
+          bazelisk-cache: true
+          disk-cache: ${{ github.workflow }}
+          repository-cache: true
+
+      - name: Generate Registry Metadata
+        run: |
+          echo "Generating registry metadata for all modules..."
+          
+          for module_dir in bcr-modules/modules/*/; do
+            module_name=$(basename "$module_dir")
+            [ ! -d "$module_dir" ] && continue
+            
+            echo ""
+            echo "📦 Processing module: ${module_name}"
+            
+            # Run the add_to_repo target
+            if bazel query "//bcr-modules/modules/${module_name}:${module_name}.add_to_repo" >/dev/null 2>&1; then
+              echo "  Running registry update for ${module_name}..."
+              bazel run "//bcr-modules/modules/${module_name}:${module_name}.add_to_repo"
+              echo "  ✅ Registry metadata generated for ${module_name}"
+            else
+              echo "  ⚠️  No add_to_repo target found for ${module_name}"
+            fi
+          done
+          
+          echo ""
+          echo "✅ All registry metadata generated"
+
+      - name: Check for Registry Changes
+        id: check_changes
+        run: |
+          if git diff --quiet vector-bazel-central-registry/; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  No changes to registry"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "📝 Registry has changes:"
+            git diff --stat vector-bazel-central-registry/
+          fi
+
+      - name: Commit Registry Updates
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add vector-bazel-central-registry/
+          
+          # Create detailed commit message
+          echo "chore: update registry modules [skip ci]" > commit_msg.txt
+          echo "" >> commit_msg.txt
+          echo "Updated modules:" >> commit_msg.txt
+          git diff --staged --name-only vector-bazel-central-registry/ | \
+            grep -oP 'modules/\K[^/]+' | sort -u | \
+            sed 's/^/- /' >> commit_msg.txt
+          echo "" >> commit_msg.txt
+          echo "Triggered by: ${{ github.event_name }}" >> commit_msg.txt
+          echo "Workflow: ${{ github.workflow }}" >> commit_msg.txt
+          echo "Commit: ${{ github.sha }}" >> commit_msg.txt
+          
+          git commit -F commit_msg.txt
+          
+          echo "✅ Registry changes committed"
+
+      - name: Push Registry Updates
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git push origin main
+          echo "✅ Registry updates pushed to main branch"
+
+      - name: Summary
+        run: |
+          echo "## Registry Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.check_changes.outputs.has_changes }}" == "true" ]; then
+            echo "✅ Registry successfully updated" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### Updated Modules" >> $GITHUB_STEP_SUMMARY
+            git diff HEAD~1 --name-only vector-bazel-central-registry/ | \
+              grep -oP 'modules/\K[^/]+' | sort -u | \
+              sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️  No registry changes needed" >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,0 +1,41 @@
+load("@rules_pkg//:mappings.bzl", "pkg_files")
+load("//bcr-modules/macros:module_macro.bzl", "module")
+load("//bcr-modules/macros:upload_macro.bzl", "module_upload")
+
+package(default_visibility = ["//visibility:public"])
+
+module_upload(
+    name = "upload",
+    archive = ":rules_gradle",
+    redeploy_if_exists = "true",
+    upload_module_name = "rules_gradle",
+    version = "0.0.1",
+)
+
+pkg_files(
+    name = "private",
+    srcs = [
+        "//bcr-modules/modules/rules_gradle/srcs:private/rules.bzl",
+        "//bcr-modules/modules/rules_gradle/srcs:private/toolchains.bzl",
+    ],
+    prefix = "private",
+)
+
+pkg_files(
+    name = "public",
+    srcs = [
+        "//bcr-modules/modules/rules_gradle/srcs:BUILD.bazel",
+        "//bcr-modules/modules/rules_gradle/srcs:MODULE.bazel",
+        "//bcr-modules/modules/rules_gradle/srcs:defs.bzl",
+    ],
+)
+
+module(
+    name = "rules_gradle",
+    integrity = "sha256-LOvabek9xEA07uo9/lKLgImwOounM5K46rBAwujJCEs=",
+    module_version = "0.0.1",
+    pkg_files_targets = [
+        "public",
+        "private",
+    ],
+)

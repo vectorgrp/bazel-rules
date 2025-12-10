@@ -1,0 +1,23 @@
+# Add jdk to startup options
+build --compilation_mode=dbg
+build --incompatible_strict_action_env
+# build --action_env=PATH=""
+# build --host_action_env=PATH=""
+build --enable_runfiles
+common --enable_bzlmod
+# Enable only downloading toplevel build output
+common --remote_download_toplevel
+
+common --registry=https://bcr.bazel.build
+
+# GitHub Actions Configuration
+# Use this when running in GitHub Actions CI environment
+build:ci --remote_download_toplevel
+build:ci --announce_rc
+build:ci --verbose_failures
+build:ci --show_timestamps
+build:ci --color=yes
+
+# GitHub Actions cache (optional - can be configured per workflow)
+# build:ci --remote_cache=https://your-cache-url.com
+# build:ci --remote_upload_local_results

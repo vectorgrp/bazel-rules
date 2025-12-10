@@ -1,0 +1,47 @@
+load("@rules_pkg//:mappings.bzl", "pkg_files")
+load("//bcr-modules/macros:module_macro.bzl", "module")
+load("//bcr-modules/macros:upload_macro.bzl", "module_upload")
+
+package(default_visibility = ["//visibility:public"])
+
+module_upload(
+    name = "upload",
+    archive = ":rules_ocs",
+    redeploy_if_exists = "true",
+    upload_module_name = "rules_ocs",
+    version = "0.0.1",
+)
+
+pkg_files(
+    name = "private",
+    srcs = [
+        "//bcr-modules/modules/rules_ocs/srcs:private/app_building.bzl",
+        "//bcr-modules/modules/rules_ocs/srcs:private/rules.bzl",
+        "//bcr-modules/modules/rules_ocs/srcs:private/toolchains.bzl",
+    ],
+    prefix = "private",
+)
+
+pkg_files(
+    name = "public",
+    srcs = [
+        "//bcr-modules/modules/rules_ocs/srcs:BUILD.bazel",
+        "//bcr-modules/modules/rules_ocs/srcs:MODULE.bazel",
+        "//bcr-modules/modules/rules_ocs/srcs:defs.bzl",
+    ],
+)
+
+module(
+    name = "rules_ocs",
+    additional_dependencies = [
+        "rules_cfg5@0.0.2",
+        "bazel_skylib@1.7.1",
+        "rules_davinci_developer@0.0.1",
+    ],
+    integrity = "sha256-ok95atZcc8sYQRCoV4eavjSWjwBV6WoULINvY0jbrxk=",
+    module_version = "0.0.1",
+    pkg_files_targets = [
+        "public",
+        "private",
+    ],
+)

@@ -1,0 +1,12 @@
+"""Simple Package for module rules"""
+
+exports_files(
+    glob(
+        ["*"],
+    ),
+)
+
+toolchain_type(
+    name = "toolchain_type",
+    visibility = ["//visibility:public"],
+)

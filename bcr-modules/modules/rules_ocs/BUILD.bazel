@@ -1,0 +1,11 @@
+load("//bcr-modules/macros:add_module_macro.bzl", "module_bcr_dir")
+
+package(default_visibility = ["//visibility:public"])
+
+module_bcr_dir(
+    name = "rules_ocs",
+    versions = [
+        "0.0.1",
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -1,0 +1,32 @@
+load("@rules_pkg//:mappings.bzl", "pkg_files")
+load("//bcr-modules/macros:module_macro.bzl", "module")
+load("//bcr-modules/macros:upload_macro.bzl", "module_upload")
+
+package(default_visibility = ["//visibility:public"])
+
+module_upload(
+    name = "upload",
+    archive = ":rules_davinci_developer",
+    redeploy_if_exists = "true",
+    upload_module_name = "rules_davinci_developer",
+    version = "0.0.1",
+)
+
+pkg_files(
+    name = "public",
+    srcs = [
+        "//bcr-modules/modules/rules_davinci_developer/srcs:BUILD.bazel",
+        "//bcr-modules/modules/rules_davinci_developer/srcs:MODULE.bazel",
+        "//bcr-modules/modules/rules_davinci_developer/srcs:rules.bzl",
+        "//bcr-modules/modules/rules_davinci_developer/srcs:toolchains.bzl",
+    ],
+)
+
+module(
+    name = "rules_davinci_developer",
+    integrity = "sha256-fmXY/e9BCbzNnWzei23U4TRH+GcbaJZ0EBxTjnvbKgU=",
+    module_version = "0.0.1",
+    pkg_files_targets = [
+        "public",
+    ],
+)

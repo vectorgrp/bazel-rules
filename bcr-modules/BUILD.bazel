@@ -1,0 +1,6 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["BUILD.bazel.tpl"])
+
+# Just use bazel query to grep your targets and run them after setting up the macros
+# bazel query //... | grep <your_module_name>

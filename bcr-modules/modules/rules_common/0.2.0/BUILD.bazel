@@ -1,0 +1,39 @@
+load("@rules_pkg//:mappings.bzl", "pkg_files")
+load("//bcr-modules/macros:module_macro.bzl", "module")
+load("//bcr-modules/macros:upload_macro.bzl", "module_upload")
+
+package(default_visibility = ["//visibility:public"])
+
+module_upload(
+    name = "upload",
+    archive = ":rules_common",
+    redeploy_if_exists = "true",
+    upload_module_name = "rules_common",
+    version = "0.2.0",
+)
+
+pkg_files(
+    name = "public",
+    srcs = [
+        "//bcr-modules/modules/rules_common/srcs:BUILD.bazel",
+        "//bcr-modules/modules/rules_common/srcs:MODULE.bazel",
+        "//bcr-modules/modules/rules_common/srcs:copy_file.bzl",
+        "//bcr-modules/modules/rules_common/srcs:create_davinci_tool_workspace.bzl",
+        "//bcr-modules/modules/rules_common/srcs:download_and_merge.bzl",
+        "//bcr-modules/modules/rules_common/srcs:extract.bzl",
+        "//bcr-modules/modules/rules_common/srcs:merge_packages.bzl",
+    ],
+)
+
+module(
+    name = "rules_common",
+    additional_dependencies = [
+        "ape@1.0.1",
+        "bazel_skylib@1.7.1",
+    ],
+    integrity = "sha256-Cc1zM2N1DR11kilDE4hIvSbD2Bpj2Z0wm1K30f56Pws=",
+    module_version = "0.2.0",
+    pkg_files_targets = [
+        "public",
+    ],
+)

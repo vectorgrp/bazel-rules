@@ -1,0 +1,17 @@
+# Microsoft office files
+*.doc
+*.docx
+*.docm
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+
+# Python
+.venv/
+venv/
+/bazel-*
+vector-bazel-central-registry/**/MODULE.bazel.lock
+
+# Bazel
+bazel-*

@@ -1,0 +1,55 @@
+load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
+load("@bazel_skylib//rules:common_settings.bzl", "bool_flag")
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+
+# Bazel-diff target to check for changed bazel targets
+######################################################
+load("@rules_java//java:defs.bzl", "java_binary")
+
+java_binary(
+    name = "bazel-diff",
+    main_class = "com.bazel_diff.Main",
+    runtime_deps = ["@bazel_diff//jar"],
+)
+
+# bazel run bazel-diff generate-hashes  -- $PWD/current_hashes.json -w=$PWD --excludeExternalTargets
+
+# Buildifier
+############
+buildifier(
+    name = "buildifier_check",
+    lint_mode = "warn",
+    mode = "check",
+)
+
+buildifier(
+    name = "buildifier_fix",
+    lint_mode = "warn",
+    mode = "fix",
+)
+
+gazelle(
+    name = "gazelle",
+    gazelle = ":gazelle_bin",
+)
+
+gazelle_binary(
+    name = "gazelle_bin",
+    languages = DEFAULT_LANGUAGES + [
+        "@bazel_skylib_gazelle_plugin//bzl",
+    ],
+)
+
+# Build setting to set dev/prod for easier URL management
+#########################################################
+config_setting(
+    name = "build_prod_modules",
+    flag_values = {
+        ":BUILD_PROD_MODULES": "True",
+    },
+)
+
+bool_flag(
+    name = "BUILD_PROD_MODULES",
+    build_setting_default = False,
+)
