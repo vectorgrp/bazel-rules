@@ -7,7 +7,6 @@ package(default_visibility = ["//visibility:public"])
 module_upload(
     name = "upload",
     archive = ":rules_dvteam",
-    redeploy_if_exists = "true",
     upload_module_name = "rules_dvteam",
     version = "0.0.1",
 )

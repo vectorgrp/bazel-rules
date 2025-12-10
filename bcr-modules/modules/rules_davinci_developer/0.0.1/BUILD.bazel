@@ -7,7 +7,6 @@ package(default_visibility = ["//visibility:public"])
 module_upload(
     name = "upload",
     archive = ":rules_davinci_developer",
-    redeploy_if_exists = "true",
     upload_module_name = "rules_davinci_developer",
     version = "0.0.1",
 )

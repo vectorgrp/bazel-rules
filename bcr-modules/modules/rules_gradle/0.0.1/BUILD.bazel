@@ -7,7 +7,6 @@ package(default_visibility = ["//visibility:public"])
 module_upload(
     name = "upload",
     archive = ":rules_gradle",
-    redeploy_if_exists = "true",
     upload_module_name = "rules_gradle",
     version = "0.0.1",
 )

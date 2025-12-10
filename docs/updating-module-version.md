@@ -35,7 +35,6 @@ package(default_visibility = ["//visibility:public"])
 module_upload(
     name = "upload",
     archive = ":<module_name>",
-    redeploy_if_exists = "true",
     upload_module_name = "<module_name>",
     version = "0.0.2",  # ← Update version
 )
