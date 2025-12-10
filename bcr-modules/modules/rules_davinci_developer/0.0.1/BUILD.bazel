@@ -23,9 +23,9 @@ pkg_files(
 
 module(
     name = "rules_davinci_developer",
-    integrity = "sha256-fmXY/e9BCbzNnWzei23U4TRH+GcbaJZ0EBxTjnvbKgU=",
+    additional_dependencies = [
+        "rules_common@0.2.0",
+    ],
     module_version = "0.0.1",
     pkg_files_targets = [
-        "public",
-    ],
 )

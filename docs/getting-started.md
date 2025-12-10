@@ -399,7 +399,7 @@ ls -la vector-bazel-central-registry/modules/<module_name>/
 **Solution:**
 ```bash
 # Recalculate hash
-sha256sum path/to/archive.zip
+sha256sum path/to/archive.tar.gz
 
 # Update module definition
 # Remove integrity attribute temporarily if needed

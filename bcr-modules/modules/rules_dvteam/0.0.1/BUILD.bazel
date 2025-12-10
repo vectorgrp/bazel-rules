@@ -37,7 +37,6 @@ module(
         "rules_gradle@0.0.1",
         "rules_davinci_developer@0.0.1",
     ],
-    integrity = "sha256-JRnEgM1HoQgwcKoiIHPkaPPlG7II7OaMZnIeX/HbMHY=",
     module_version = "0.0.1",
     pkg_files_targets = [
         "public",
