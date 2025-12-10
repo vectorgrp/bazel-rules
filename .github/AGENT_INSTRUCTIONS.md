@@ -5,7 +5,7 @@
 This is the **Vector Bazel Rules** repository (`vectorgrp/bazel-rules` on GitHub), a comprehensive Bazel monorepo for developing, building, and managing custom Bazel rules and modules used across Vector projects.
 
 **Current Modules:**
-- `rules_cfg5`, `rules_common`, `rules_davinci_developer`, `rules_davinci_project`, `rules_dvteam`, `rules_gradle`, `rules_ocs`
+- `rules_cfg5`, `rules_common`, `rules_davinci_developer`, `rules_dvteam`, `rules_gradle`, `rules_ocs`
 
 ## Project Structure
 
@@ -17,7 +17,7 @@ This is the **Vector Bazel Rules** repository (`vectorgrp/bazel-rules` on GitHub
    - Each module follows a standardized directory structure
 
 2. **`bcr-modules/modules/`** - Individual module implementations
-   - Current modules: `rules_cfg5`, `rules_common`, `rules_davinci_developer`, `rules_davinci_project`, `rules_dvteam`, `rules_gradle`, `rules_ocs`
+   - Current modules: `rules_cfg5`, `rules_common`, `rules_davinci_developer`, `rules_dvteam`, `rules_gradle`, `rules_ocs`
    - **Note**: More modules will be added as migration progresses
 
 3. **`bcr-modules/macros/`** - Automation macros

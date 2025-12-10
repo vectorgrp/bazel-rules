@@ -57,7 +57,6 @@ package(default_visibility = ["//visibility:public"])
 module_upload(
     name = "upload",
     archive = ":<module_name>",
-    redeploy_if_exists = "true",
     upload_module_name = "<module_name>",
     version = "0.0.1",
 )
@@ -238,4 +237,3 @@ Add the `integrity` attribute to your `module()` call to speed up future builds.
 
 - **Simple module**: `bcr-modules/modules/rules_common/`
 - **With private files**: `bcr-modules/modules/rules_dvteam/`
-- **With templates**: `bcr-modules/modules/rules_davinci_project/`
