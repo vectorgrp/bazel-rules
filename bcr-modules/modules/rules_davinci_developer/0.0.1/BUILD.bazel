@@ -28,4 +28,6 @@ module(
     ],
     module_version = "0.0.1",
     pkg_files_targets = [
+        "public",
+    ],
 )
