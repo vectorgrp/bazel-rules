@@ -90,8 +90,8 @@ jobs:
       - name: Push Registry Updates
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          git push origin main
-          echo "✅ Registry updates pushed to main branch"
+          git push origin HEAD
+          echo "✅ Registry updates pushed to current branch"
 
       - name: Summary
         run: |

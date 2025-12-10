@@ -31,7 +31,6 @@ pkg_files(
 
 module(
     name = "rules_gradle",
-    integrity = "sha256-LOvabek9xEA07uo9/lKLgImwOounM5K46rBAwujJCEs=",
     module_version = "0.0.1",
     pkg_files_targets = [
         "public",

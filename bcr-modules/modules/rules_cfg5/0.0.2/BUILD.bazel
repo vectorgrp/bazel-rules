@@ -48,7 +48,6 @@ module(
         "bazel_skylib@1.7.1",
         "rules_common@0.0.1",
     ],
-    integrity = "sha256-4tI5CEYLVy+65imezH41J8SPZXo+VzcsUh9odv+FZRU=",
     module_version = "0.0.2",
     pkg_files_targets = [
         "public",

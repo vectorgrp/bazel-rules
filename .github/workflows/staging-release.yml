@@ -74,7 +74,7 @@ jobs:
             echo "🚀 Uploading ${module_name} v${version} to staging..."
             
             # Build the module archive
-            archive_path="bazel-bin/bcr-modules/modules/${module_name}/${version}/${module_name}.zip"
+            archive_path="bazel-bin/bcr-modules/modules/${module_name}/${version}/${module_name}.tar.gz"
             
             if [ ! -f "$archive_path" ]; then
               echo "❌ Archive not found: $archive_path"

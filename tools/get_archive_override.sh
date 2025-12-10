@@ -8,7 +8,7 @@ archive_path=$2
 
 # Copy archive_override to clipboard
 
-folder_name=$(basename "$archive_path" .zip)
+folder_name=$(basename "$archive_path" .tar.gz)
 
 sha256_hash=$(sha256sum "$archive_path" | cut -d ' ' -f 1)
 
