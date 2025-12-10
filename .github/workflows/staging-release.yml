@@ -1,10 +1,8 @@
 name: Staging Release
 
 on:
-  workflow_dispatch:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  push:
+    branches: [module-based-clean]
 
 jobs:
   upload_staging_modules:
