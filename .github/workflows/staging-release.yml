@@ -8,7 +8,7 @@ jobs:
   upload_staging_modules:
     name: Upload Modules to Staging
     runs-on: ubuntu-latest
-    if: (github.event.pull_request.merged == true && github.event.pull_request.draft == false) || github.event_name == 'workflow_dispatch'
+    if: (github.event.pull_request.merged == true && github.event.pull_request.draft == false) || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
     permissions:
       contents: write  # Required for creating releases
     steps:
