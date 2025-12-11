@@ -30,6 +30,15 @@ pkg_files(
 )
 
 pkg_files(
+    name = "private_templates",
+    srcs = [
+        "//bcr-modules/modules/rules_cfg5/srcs:private/templates/filter_linux.sh.tpl",
+        "//bcr-modules/modules/rules_cfg5/srcs:private/templates/filter_windows.ps1.tpl",
+    ],
+    prefix = "private/templates",
+)
+
+pkg_files(
     name = "public",
     srcs = [
         "//bcr-modules/modules/rules_cfg5/srcs:BUILD.bazel",
@@ -43,15 +52,17 @@ pkg_files(
 module(
     name = "rules_cfg5",
     additional_dependencies = [
-        "rules_vtt@0.0.1",
         "ape@1.0.1",
         "bazel_skylib@1.7.1",
-        "rules_common@0.0.1",
+        "rules_cc@0.1.1",
+        "rules_common@0.2.0",
+        # "rules_vtt@0.0.1",
     ],
     module_version = "0.0.2",
     pkg_files_targets = [
         "public",
         "private",
         "private_common",
+        "private_templates",
     ],
 )
