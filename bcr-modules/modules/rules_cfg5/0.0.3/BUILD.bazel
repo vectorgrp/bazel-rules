@@ -1,0 +1,68 @@
+load("@rules_pkg//:mappings.bzl", "pkg_files")
+load("//bcr-modules/macros:module_macro.bzl", "module")
+load("//bcr-modules/macros:upload_macro.bzl", "module_upload")
+
+package(default_visibility = ["//visibility:public"])
+
+module_upload(
+    name = "upload",
+    archive = ":rules_cfg5",
+    upload_module_name = "rules_cfg5",
+    version = "0.0.3",
+)
+
+pkg_files(
+    name = "private",
+    srcs = [
+        "//bcr-modules/modules/rules_cfg5/srcs:private/generate.bzl",
+        "//bcr-modules/modules/rules_cfg5/srcs:private/start.bzl",
+        "//bcr-modules/modules/rules_cfg5/srcs:private/toolchains.bzl",
+    ],
+    prefix = "private",
+)
+
+pkg_files(
+    name = "private_common",
+    srcs = [
+        "//bcr-modules/modules/rules_cfg5/srcs:private/common/component_refs.bzl",
+    ],
+    prefix = "private/common",
+)
+
+pkg_files(
+    name = "private_templates",
+    srcs = [
+        "//bcr-modules/modules/rules_cfg5/srcs:private/templates/filter_linux.sh.tpl",
+        "//bcr-modules/modules/rules_cfg5/srcs:private/templates/filter_windows.ps1.tpl",
+    ],
+    prefix = "private/templates",
+)
+
+pkg_files(
+    name = "public",
+    srcs = [
+        "//bcr-modules/modules/rules_cfg5/srcs:BUILD.bazel",
+        "//bcr-modules/modules/rules_cfg5/srcs:MODULE.bazel",
+        "//bcr-modules/modules/rules_cfg5/srcs:README.md",
+        "//bcr-modules/modules/rules_cfg5/srcs:defs.bzl",
+        "//bcr-modules/modules/rules_cfg5/srcs:generate.bzl",
+    ],
+)
+
+module(
+    name = "rules_cfg5",
+    additional_dependencies = [
+        "ape@1.0.1",
+        "bazel_skylib@1.7.1",
+        "rules_cc@0.1.1",
+        "rules_common@0.2.0",
+        # "rules_vtt@0.0.1",
+    ],
+    module_version = "0.0.3",
+    pkg_files_targets = [
+        "public",
+        "private",
+        "private_common",
+        "private_templates",
+    ],
+)
