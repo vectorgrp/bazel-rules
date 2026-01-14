@@ -210,7 +210,11 @@ bazel query "//bcr-modules/modules/<module_name>/..."
 
 ```bash
 # Generate registry files and copy to vector-bazel-central-registry/
+# For development/staging URLs (default)
 bazel run //bcr-modules/modules/<module_name>:<module_name>.add_to_repo
+
+# For production URLs (after production release)
+bazel run --//:BUILD_PROD_MODULES=True //bcr-modules/modules/<module_name>:<module_name>.add_to_repo
 ```
 
 ### 7. After Production Upload

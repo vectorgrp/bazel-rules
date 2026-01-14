@@ -58,6 +58,7 @@ module(
         "rules_common@0.2.0",
         # "rules_vtt@0.0.1",
     ],
+    integrity = "sha256-1fapYH7CoZU7T4AAeqYJm6wpyYw04oFdFeCnftBYlEg=",
     module_version = "0.0.3",
     pkg_files_targets = [
         "public",

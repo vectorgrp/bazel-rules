@@ -168,14 +168,20 @@ bazel build //bcr-modules/modules/<module_name>/<version>:<module_name> --config
 
 ```bash
 # Add module to the central registry
+# For development/staging URLs (default)
 bazel run //bcr-modules/modules/<module_name>:<module_name>.add_to_repo
+
+# For production URLs (after production release)
+bazel run --//:BUILD_PROD_MODULES=True //bcr-modules/modules/<module_name>:<module_name>.add_to_repo
 ```
 
 This command:
 - Builds all required archives and metadata files
 - Generates `metadata.json`, `source.json`, `MODULE.bazel`, and `BUILD.bazel`
 - Copies files to `vector-bazel-central-registry/modules/<module_name>/`
-- Prompts for confirmation if the target directory exists
+- Automatically overwrites existing files without prompting
+
+> **Note:** Use `--//:BUILD_PROD_MODULES=True` when updating the registry after production releases to ensure production URLs are used in `source.json`.
 
 ### Performance Optimization with Integrity Hashes
 

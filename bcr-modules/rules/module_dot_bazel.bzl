@@ -10,6 +10,7 @@ module(
     version = "{module_version}",
     compatibility_level = {compatibility_level},
 )
+
 EOL
 """
 

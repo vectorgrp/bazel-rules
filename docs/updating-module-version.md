@@ -115,12 +115,18 @@ bazel query "//bcr-modules/modules/<module_name>/..."
 ### 6. Update Registry
 
 ```bash
+# For development/staging URLs (default)
 bazel run //bcr-modules/modules/<module_name>:<module_name>.add_to_repo
+
+# For production URLs (after production release)
+bazel run --//:BUILD_PROD_MODULES=True //bcr-modules/modules/<module_name>:<module_name>.add_to_repo
 ```
 
 This updates `vector-bazel-central-registry/modules/<module_name>/` with:
 - Updated `metadata.json` (includes new version)
 - New `0.0.2/` directory with `MODULE.bazel` and `source.json`
+
+> **Note:** Use `--//:BUILD_PROD_MODULES=True` when updating the registry after production releases to ensure production URLs are used.
 
 ### 7. Post-Upload: Add Integrity Hash
 

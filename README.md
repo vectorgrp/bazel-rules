@@ -38,7 +38,8 @@ This repository is structured around three main development areas:
 - **`vector-bazel-central-registry/`** - Module registry management
   - Maintains the central registry of all custom modules
   - Automatically updated via Bazel targets - **do not edit manually**
-  - Updates performed via: `bazel run //bcr-modules/modules/<module_name>:<module_name>.add_to_repo`
+  - Updates performed via: `bazel run [--//:BUILD_PROD_MODULES=True] //bcr-modules/modules/<module_name>:<module_name>.add_to_repo`
+  - Use `--//:BUILD_PROD_MODULES=True` flag for production releases
 
 ### Supporting Infrastructure
 

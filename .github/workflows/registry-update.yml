@@ -41,7 +41,7 @@ jobs:
             # Run the add_to_repo target
             if bazel query "//bcr-modules/modules/${module_name}:${module_name}.add_to_repo" >/dev/null 2>&1; then
               echo "  Running registry update for ${module_name}..."
-              bazel run "//bcr-modules/modules/${module_name}:${module_name}.add_to_repo"
+              bazel run --//:BUILD_PROD_MODULES=True "//bcr-modules/modules/${module_name}:${module_name}.add_to_repo"
               echo "  ✅ Registry metadata generated for ${module_name}"
             else
               echo "  ⚠️  No add_to_repo target found for ${module_name}"
