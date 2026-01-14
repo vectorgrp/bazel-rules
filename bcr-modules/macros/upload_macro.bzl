@@ -1,5 +1,6 @@
 """A simple macro to build upload and download targets for a given module version and urls"""
 
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("//bcr-modules:urls.bzl", "DEFAULT_DEV_GIT_UPLOAD_URL", "DEFAULT_PROD_GIT_UPLOAD_URL")
 
 def _get_url(url, upload_module_name, version):
@@ -22,7 +23,7 @@ def _upload_macro_impl(name, visibility, upload_module_name, version, archive, d
 
     for target in URLS.keys():
         # Add a convenience function to get moduel archive_override text
-        native.sh_binary(
+        sh_binary(
             name = target + "_get_archive_override",
             srcs = ["//tools:get_archive_override.sh"],
             args = [
