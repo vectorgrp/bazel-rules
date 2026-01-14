@@ -37,6 +37,7 @@ module(
         "bazel_skylib@1.7.1",
         "rules_davinci_developer@0.0.1",
     ],
+    integrity = "sha256-3vZWwd/Jbc9Z85luQsNJWl2ll6t8FMj+XAi9O229WDg=",
     module_version = "0.0.1",
     pkg_files_targets = [
         "public",

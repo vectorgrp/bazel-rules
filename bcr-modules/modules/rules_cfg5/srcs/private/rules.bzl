@@ -23,6 +23,8 @@
 
 """Rules for cfg5"""
 
+load("@rules_cc//cc/common:cc_common.bzl", "cc_common")
+load("@rules_cc//cc/common:cc_info.bzl", "CcInfo")
 load("//rules/common:create_davinci_tool_workspace.bzl", "create_davinci_tool_workspace")
 #load("//rules/vtt:toolchains.bzl", "generate_tools_vtt")
 

@@ -2,6 +2,7 @@
 
 load("@rules_pkg//:mappings.bzl", "pkg_files")
 load("@rules_pkg//:pkg.bzl", "pkg_zip")
+load("@rules_shell//shell:sh_binary.bzl", "sh_binary")
 load("//bcr-modules/rules:defs.bzl", "metadata_json")
 
 def _add_module_macro_impl(name, visibility, versions, **kwargs):
@@ -37,7 +38,7 @@ def _add_module_macro_impl(name, visibility, versions, **kwargs):
     )
 
     # bazel run target to directly put the generated metadata information into  the vector-bazel-central-registry/modules folder in the repo
-    native.sh_binary(
+    sh_binary(
         name = name + ".add_to_repo",
         srcs = ["//tools:add_module.sh"],
         args = ["$(location @ape//ape:unzip)", "$(location " + name + ")", "vector-bazel-central-registry/modules/" + name],

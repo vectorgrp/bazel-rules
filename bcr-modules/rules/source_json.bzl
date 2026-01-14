@@ -30,6 +30,7 @@ fi
 # Close the JSON object
 cat <<EOL >> {output_file}
 }}
+EOL
 """
 
 def _source_json_impl(ctx):

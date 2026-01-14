@@ -69,9 +69,16 @@ try {
 
         $fileName = [System.IO.Path]::GetFileNameWithoutExtension($filePath)
 
+        # First, check for exact match (files named exactly like the component)
         foreach ($component in $components) {
-            # Check if filename starts with component name (e.g., Com_*, BswM_*, etc.)
-            if ($fileName -like "${component}_*" -or $fileName -eq $component) {
+            if ($fileName -eq $component) {
+                return $component
+            }
+        }
+
+        # Second, check for prefix match with underscore (e.g., Com_PduR)
+        foreach ($component in $components) {
+            if ($fileName -like "${component}_*") {
                 return $component
             }
         }

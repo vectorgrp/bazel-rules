@@ -39,13 +39,23 @@ mkdir -p "{sources_dir}"
 get_component() {
     local file_path="$1"
     local filename=$(basename "$file_path")
-    local base_name=$(basename "$filename" | sed 's/\\.[^.]*$//')
+    local base_name="${filename%.*}"
 
     # List of components
     components=({components_list})
 
+    # First, check for exact match (files named exactly like the component)
     for component in "${components[@]}"; do
-        if [[ "$base_name" == "${component}_"* ]] || [[ "$base_name" == "$component" ]]; then
+        if [[ "$base_name" == "$component" ]]; then
+            echo "$component"
+            return
+        fi
+    done
+
+    # Second, check for prefix match with underscore (e.g., Com_PduR)
+    # Sort by length (longest first) to avoid shorter names matching prefixes of longer names
+    for component in "${components[@]}"; do
+        if [[ "$base_name" == "${component}_"* ]]; then
             echo "$component"
             return
         fi

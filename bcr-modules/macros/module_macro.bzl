@@ -36,10 +36,7 @@ def _module_macro_impl(
     # used to package our module archive while at the same time setting the mode to 0755, this had to be done via pes-cd before.
     pkg_tar(
         name = name,
-        srcs = [name + "_srcs"] if len(pkg_files_targets) <= 0 else pkg_files_targets +
-                                                                    [
-                                                                        ":" + name + "_BUILD_bazel",
-                                                                    ],
+        srcs = [name + "_srcs", ":" + name + "_BUILD_bazel"] if len(pkg_files_targets) <= 0 else pkg_files_targets,
         extension = "tar.gz",
         mode = "0755",
         visibility = visibility,
