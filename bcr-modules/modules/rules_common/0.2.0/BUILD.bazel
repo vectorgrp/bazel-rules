@@ -30,6 +30,7 @@ module(
         "ape@1.0.1",
         "bazel_skylib@1.7.1",
     ],
+    integrity = "sha256-e7YlsDOw56tZNJCf9BR/RcTDaMSH/6bSwLGjiZcUQ0A=",
     module_version = "0.2.0",
     pkg_files_targets = [
         "public",

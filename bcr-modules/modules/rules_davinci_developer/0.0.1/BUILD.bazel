@@ -26,6 +26,7 @@ module(
     additional_dependencies = [
         "rules_common@0.2.0",
     ],
+    integrity = "sha256-WSlPCkm28Mi7IQqdGlrFgzzRC1s6GG2WOwB/ywvZfVU=",
     module_version = "0.0.1",
     pkg_files_targets = [
         "public",
