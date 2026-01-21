@@ -68,3 +68,20 @@ This repository is structured around three main development areas:
 ├── docs/                           # Documentation and guides
 └── .github/                        # CI/CD configuration
 ```
+
+## Rule Documentation
+
+Comprehensive documentation for each Bazel module is available in its respective directory:
+
+**User Documentation**: `bcr-modules/modules/<module_name>/README.md`
+
+### Available Modules
+
+- **rules_cfg5** - DaVinci Configurator 5 code generation
+- **rules_common** - Common utilities for DaVinci tool integration
+- **rules_davinci_developer** - DaVinci Developer toolchain
+- **rules_dvteam** - DaVinci Team integration automation
+- **rules_gradle** - Gradle toolchain and authentication
+- **rules_ocs** - OCS execution and CFG5 script tasks
+
+Each module's README.md contains installation instructions, usage examples, API reference and troubleshooting information.
