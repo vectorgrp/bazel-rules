@@ -313,7 +313,8 @@ developer_run(
 ## Dependencies
 
 ### Required Bazel Modules
-- None (standalone module)
+- `rules_common` (version 0.2.0 or higher) - Provides workspace creation utilities
+- `bazel_skylib` (version 1.7.1 or higher) - Common Bazel utilities
 
 ### External Tools
 - **DaVinci Developer**: One or more of the following binaries:

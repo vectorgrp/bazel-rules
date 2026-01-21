@@ -291,6 +291,7 @@ cc_library(
 - `rules_common` (version 0.2.0 or higher) - Provides workspace creation utilities
 - `bazel_skylib` (version 1.7.1 or higher) - Common Bazel utilities
 - `rules_cc` - C/C++ rules for CcInfo providers
+- `ape` - (version 1.0.1 or higher) - Used for file filtering
 
 ### External Tools
 - **DaVinci Configurator 5**: CFG5 CLI executable must be available

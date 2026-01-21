@@ -8,10 +8,11 @@ To consume the rules defined in this repository, you need to register the custom
 
 **Configuration Steps:**
 
-1.  **Update `.bazelrc`**: Add the following flag to your project's `.bazelrc` file to point Bazel to the raw content of the registry directory.
+1.  **Update `.bazelrc`**: Add the following flag to your project's `.bazelrc` file to point Bazel to the registry directory and the Bazel Central Registry.
 
     ```properties
     common --registry=https://raw.githubusercontent.com/vectorgrp/bazel-rules/main/vector-bazel-central-registry
+    common --registry=https://bcr.bazel.build
     ```
 
 2.  **Add Dependencies**: In your `MODULE.bazel` file, declare the dependencies you need using `bazel_dep`.
