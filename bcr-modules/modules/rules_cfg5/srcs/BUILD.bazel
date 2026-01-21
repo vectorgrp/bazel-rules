@@ -32,7 +32,6 @@ exports_files(
         "private/templates/filter_windows.ps1.tpl",
         "generate.bzl",
         "defs.bzl",
-        "README.md",
         "private/toolchains.bzl",
         "MODULE.bazel",
         "BUILD.bazel",
