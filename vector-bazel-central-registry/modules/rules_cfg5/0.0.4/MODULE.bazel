@@ -1,0 +1,10 @@
+module(
+    name = "rules_cfg5",
+    version = "0.0.4",
+    compatibility_level = 1,
+)
+
+bazel_dep(name = "ape", version = "1.0.1")
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "rules_cc", version = "0.1.1")
+bazel_dep(name = "rules_common", version = "0.2.0")

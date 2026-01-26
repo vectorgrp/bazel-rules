@@ -43,7 +43,6 @@ pkg_files(
     srcs = [
         "//bcr-modules/modules/rules_cfg5/srcs:BUILD.bazel",
         "//bcr-modules/modules/rules_cfg5/srcs:MODULE.bazel",
-        "//bcr-modules/modules/rules_cfg5/srcs:README.md",
         "//bcr-modules/modules/rules_cfg5/srcs:defs.bzl",
         "//bcr-modules/modules/rules_cfg5/srcs:generate.bzl",
     ],
