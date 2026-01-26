@@ -177,10 +177,10 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, inputs, template, additional_genar
 
         compilation_context = cc_common.create_compilation_context(
             headers = depset(
-                [headers_dir] + component_headers_dirs,
+                [headers_dir],
             ),
             includes = depset(
-                [headers_dir.path] + [comp_hdr_dir.path for comp_hdr_dir in component_headers_dirs],
+                [headers_dir.path],
             ),
         )
 
@@ -276,6 +276,21 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, inputs, template, additional_genar
     # Main CcInfo containing all generated files (for backward compatibility)
     main_cc_info = CcInfo(compilation_context = compilation_context)
 
+    # Create unmapped CcInfo with only headers_dir (no component-specific dirs)
+    if ctx.attr.private_is_windows:
+        unmapped_includes = [headers_dir.path]
+    else:
+        unmapped_includes = [
+            headers_dir.path + "/" + gen_dir,
+            headers_dir.path + "/" + gen_dir + "/Components",
+        ]
+    
+    unmapped_compilation_context = cc_common.create_compilation_context(
+        headers = depset([headers_dir]),
+        includes = depset(unmapped_includes),
+    )
+    unmapped_cc_info = CcInfo(compilation_context = unmapped_compilation_context)
+
     # Create component-specific CcInfo providers only for actual components
     component_cc_infos = {}
     for i, component in enumerate(actual_components):
@@ -286,13 +301,10 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, inputs, template, additional_genar
             if ctx.attr.private_is_windows:
                 component_includes = [
                     component_headers_dirs[i].path,
-                    headers_dir.path,
                 ]
             else:
                 component_includes = [
-                    component_headers_dirs[i].path + "/" + gen_dir,
-                    component_headers_dirs[i].path + "/" + gen_dir + "/Components",
-                    headers_dir.path,
+                    component_headers_dirs[i].path,
                 ]
 
             component_compilation_context = cc_common.create_compilation_context(
@@ -305,13 +317,16 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, inputs, template, additional_genar
     # Collect all output directories for DefaultInfo
     all_output_dirs = [sources_dir, headers_dir] + component_sources_dirs + component_headers_dirs
 
+    # Add unmapped to components dict
+    component_cc_infos["unmapped"] = unmapped_cc_info
+
     return [
         DefaultInfo(files = depset(additional_output_file_artifacts + all_output_dirs + [dvcfg5_report_file, dvcfg5_log_file])),
         main_cc_info,
         MultipleCcInfo(
             main = main_cc_info,
             components = component_cc_infos,
-            component_names = actual_components,
+            component_names = actual_components + ["unmapped"],
         ),
     ]
 
@@ -375,11 +390,11 @@ def _extract_component_cc_info_impl(ctx):
     multiple_cc_info = ctx.attr.src[MultipleCcInfo]
     component_name = ctx.attr.component
 
-    if component_name in multiple_cc_info.components or component_name == "main":
-        if component_name == "main":
-            # For unmapped files, use main CcInfo and main directories (which contain unmapped files after component files are moved)
-            component_cc_info = ctx.attr.src[CcInfo]  # Use the main CcInfo from the source target
-            directory_suffix = ""  # Main directories don't have suffix
+    if component_name in multiple_cc_info.components:
+        if component_name == "unmapped":
+            # For unmapped files, use the unmapped-specific CcInfo with only headers_dir
+            component_cc_info = multiple_cc_info.components["unmapped"]
+            directory_suffix = ""  # Unmapped files are in main directories without suffix
         else:
             component_cc_info = multiple_cc_info.components[component_name]
             directory_suffix = "_" + component_name

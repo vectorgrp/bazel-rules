@@ -122,5 +122,5 @@ def cfg5_generate_rt(name, components = [], **kwargs):
         extract_component_cc_info(
             name = name + "_unmapped",
             src = ":" + name,
-            component = "main",  # "main" contains all unmapped files
+            component = "unmapped",  # Unmapped files with restricted includes
         )

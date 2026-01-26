@@ -341,7 +341,10 @@ The output directory for GenData in the .dpa file must be set to:
 
 When `components` list is provided, the rule creates separate targets for each component:
 - Main target: `{name}` - All generated code
-- Component targets: `{name}_{ComponentName}` - Component-specific code
+- Unmapped target: `{name}_unmapped` - Shared headers without component-specific directories
+- Component targets: `{name}_{ComponentName}` - Component-specific code with includes
+
+The unmapped target provides access to shared generated headers (GenData directory) that are not filtered to any component-specific header directories. This is useful for Gendata, that cannot be filtered that easily.
 
 Example:
 ```python
@@ -353,9 +356,15 @@ cfg5_generate_rt(
 
 # Creates targets:
 # - :bsw (all code)
-# - :bsw_CanIf (CanIf only)
-# - :bsw_Com (Com only)
+# - :bsw_unmapped (shared headers only)
+# - :bsw_CanIf (CanIf headers and sources)
+# - :bsw_Com (Com headers and sources)
 ```
+
+**Include Path Behavior:**
+- **Main target** (`bsw`): Provides all headers and all component-specific include directories
+- **Unmapped target** (`bsw_unmapped`): Provides only shared GenData includes (no component-specific directories)
+- **Component targets** (`bsw_CanIf`, `bsw_Com`): Each provides its own component headers plus shared GenData includes
 
 ### File Filtering
 
