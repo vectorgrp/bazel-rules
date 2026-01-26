@@ -298,14 +298,9 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, inputs, template, additional_genar
             # Include both component-specific and main headers for proper include resolution
             component_headers = [component_headers_dirs[i], headers_dir]
 
-            if ctx.attr.private_is_windows:
-                component_includes = [
-                    component_headers_dirs[i].path,
-                ]
-            else:
-                component_includes = [
-                    component_headers_dirs[i].path,
-                ]
+            component_includes = [
+                component_headers_dirs[i].path,
+            ]
 
             component_compilation_context = cc_common.create_compilation_context(
                 headers = depset(component_headers),
