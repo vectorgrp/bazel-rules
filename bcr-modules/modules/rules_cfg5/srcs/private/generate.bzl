@@ -284,7 +284,7 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, inputs, template, additional_genar
             headers_dir.path + "/" + gen_dir,
             headers_dir.path + "/" + gen_dir + "/Components",
         ]
-    
+
     unmapped_compilation_context = cc_common.create_compilation_context(
         headers = depset([headers_dir]),
         includes = depset(unmapped_includes),
