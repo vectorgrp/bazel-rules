@@ -177,10 +177,10 @@ def _cfg5_generate(ctx, dpa_path, dpa_folder, inputs, template, additional_genar
 
         compilation_context = cc_common.create_compilation_context(
             headers = depset(
-                [headers_dir],
+                [headers_dir] + component_headers_dirs,
             ),
             includes = depset(
-                [headers_dir.path],
+                [headers_dir.path] + [comp_hdr_dir.path for comp_hdr_dir in component_headers_dirs],
             ),
         )
 

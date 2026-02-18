@@ -8,7 +8,7 @@ module_upload(
     name = "upload",
     archive = ":rules_cfg5",
     upload_module_name = "rules_cfg5",
-    version = "0.0.4",
+    version = "0.0.5",
 )
 
 pkg_files(
@@ -57,8 +57,7 @@ module(
         "rules_common@0.2.0",
         # "rules_vtt@0.0.1",
     ],
-    integrity = "sha256-WSxSkVHR2Z4YQEMSCXjFbLLI6nNtQJaDShOA46+YO8I=",
-    module_version = "0.0.4",
+    module_version = "0.0.5",
     pkg_files_targets = [
         "public",
         "private",

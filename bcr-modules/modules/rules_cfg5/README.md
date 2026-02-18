@@ -3,7 +3,7 @@
 ## Overview
 
 **Module Name:** `rules_cfg5`  
-**Current Version:** 0.0.3  
+**Current Version:** 0.0.5  
 **Purpose:** Bazel rules for DaVinci Configurator 5 (CFG5) code generation and toolchain management
 
 ### Description
