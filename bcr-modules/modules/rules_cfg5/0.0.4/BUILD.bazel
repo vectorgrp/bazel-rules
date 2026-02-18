@@ -57,6 +57,7 @@ module(
         "rules_common@0.2.0",
         # "rules_vtt@0.0.1",
     ],
+    integrity = "sha256-WSxSkVHR2Z4YQEMSCXjFbLLI6nNtQJaDShOA46+YO8I=",
     module_version = "0.0.4",
     pkg_files_targets = [
         "public",
