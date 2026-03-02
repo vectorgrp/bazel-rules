@@ -78,6 +78,7 @@ Comprehensive documentation for each Bazel module is available in its respective
 
 ### Available Modules
 
+- **rules_bsw** - BSW package BUILD file generation
 - **rules_cfg5** - DaVinci Configurator 5 code generation
 - **rules_common** - Common utilities for DaVinci tool integration
 - **rules_davinci_developer** - DaVinci Developer toolchain

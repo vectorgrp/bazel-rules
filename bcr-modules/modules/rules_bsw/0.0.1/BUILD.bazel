@@ -1,0 +1,38 @@
+load("@rules_pkg//:mappings.bzl", "pkg_files")
+load("//bcr-modules/macros:module_macro.bzl", "module")
+load("//bcr-modules/macros:upload_macro.bzl", "module_upload")
+
+package(default_visibility = ["//visibility:public"])
+
+module_upload(
+    name = "upload",
+    archive = ":rules_bsw",
+    upload_module_name = "rules_bsw",
+    version = "0.0.1",
+)
+
+pkg_files(
+    name = "private",
+    srcs = [
+        "//bcr-modules/modules/rules_bsw/srcs:private/bsw.bzl",
+    ],
+    prefix = "private",
+)
+
+pkg_files(
+    name = "public",
+    srcs = [
+        "//bcr-modules/modules/rules_bsw/srcs:BUILD.bazel",
+        "//bcr-modules/modules/rules_bsw/srcs:MODULE.bazel",
+        "//bcr-modules/modules/rules_bsw/srcs:defs.bzl",
+    ],
+)
+
+module(
+    name = "rules_bsw",
+    module_version = "0.0.1",
+    pkg_files_targets = [
+        "public",
+        "private",
+    ],
+)
