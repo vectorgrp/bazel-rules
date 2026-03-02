@@ -23,6 +23,6 @@
 
 """Repository rule to create Bazel files for BSW packages."""
 
-load("//private:bsw.bzl", _bsw = "bsw")
+load("private/bsw.bzl", _bsw = "bsw")
 
 bsw = _bsw
